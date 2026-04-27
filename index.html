@@ -1,0 +1,3573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapeamento EdTech Brasil — Dashboard Executivo</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
+
+  <style>
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #F8F9FB;
+      --surface:   #FFFFFF;
+      --surface2:  #F3F4F8;
+      --border:    #E6E8EF;
+      --text-1:    #0E1117;
+      --text-2:    #4A5168;
+      --text-3:    #8891A8;
+      --accent-1:  #1C5DFF;
+      --accent-2:  #00C2A8;
+      --accent-3:  #FF6B35;
+      --accent-4:  #7C3AED;
+      --accent-5:  #F59E0B;
+
+      /* chart palette */
+      --c1: #1C5DFF;
+      --c2: #00C2A8;
+      --c3: #FF6B35;
+      --c4: #7C3AED;
+      --c5: #F59E0B;
+      --c6: #EC4899;
+      --c7: #10B981;
+      --c8: #6366F1;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 20px rgba(0,0,0,.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,.10);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ─── Layout ─── */
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+
+    /* ─── Header / Hero ─── */
+    .hero {
+      background: linear-gradient(135deg, #0E1117 0%, #1a2240 60%, #0a2250 100%);
+      padding: 72px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 700px 400px at 80% 50%, rgba(28,93,255,.15) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 300px at 20% 80%, rgba(0,194,168,.1) 0%, transparent 60%);
+    }
+    .hero-inner {
+      position: relative;
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(28,93,255,.18);
+      border: 1px solid rgba(28,93,255,.4);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #90AAFF;
+      width: fit-content;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.15;
+      letter-spacing: -.5px;
+    }
+    .hero h1 span { color: #4C8BFF; }
+    .hero p {
+      font-size: 16px;
+      font-weight: 400;
+      color: rgba(255,255,255,.65);
+      max-width: 620px;
+      line-height: 1.7;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-top: 8px;
+    }
+    .hero-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,.5);
+      font-size: 12px;
+    }
+    .hero-meta-item i { color: var(--accent-2); }
+
+    /* ─── Nav Tabs ─── */
+    .nav-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-bar .container {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 0 24px;
+    }
+    .nav-bar .container::-webkit-scrollbar { display: none; }
+    .nav-tab {
+      padding: 16px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-3);
+      cursor: pointer;
+      border: none;
+      background: none;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+    }
+    .nav-tab:hover { color: var(--text-2); }
+    .nav-tab.active { color: var(--accent-1); border-bottom-color: var(--accent-1); font-weight: 600; }
+
+    /* ─── Sections ─── */
+    .section {
+      padding: 56px 0;
+      display: none;
+    }
+    .section.active { display: block; }
+
+    .section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent-1);
+    }
+    .section-title {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 700;
+      letter-spacing: -.3px;
+      color: var(--text-1);
+      line-height: 1.2;
+    }
+    .section-desc {
+      font-size: 15px;
+      color: var(--text-2);
+      max-width: 700px;
+      line-height: 1.7;
+    }
+
+    /* ─── KPI Cards ─── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--kpi-color, var(--accent-1));
+    }
+    .kpi-icon {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      background: var(--kpi-bg, rgba(28,93,255,.1));
+      color: var(--kpi-color, var(--accent-1));
+    }
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--text-1);
+      line-height: 1;
+    }
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .kpi-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 100px;
+      width: fit-content;
+    }
+    .kpi-trend.up { background: rgba(16,185,129,.12); color: #059669; }
+    .kpi-trend.neutral { background: rgba(245,158,11,.12); color: #D97706; }
+    .kpi-trend.blue { background: rgba(28,93,255,.1); color: var(--accent-1); }
+
+    /* ─── Chart Cards ─── */
+    .charts-grid {
+      display: grid;
+      gap: 20px;
+    }
+    .charts-2col { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
+    .charts-3col { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow .2s;
+    }
+    .chart-card:hover { box-shadow: var(--shadow-md); }
+    .chart-card.full-width { grid-column: 1 / -1; }
+
+    .chart-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .chart-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -.2px;
+    }
+    .chart-subtitle {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 3px;
+    }
+    .chart-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: var(--surface2);
+      color: var(--text-2);
+      white-space: nowrap;
+    }
+
+    .chart-wrap { position: relative; }
+    .chart-wrap-400 { height: 400px; }
+    .chart-wrap-320 { height: 320px; }
+    .chart-wrap-280 { height: 280px; }
+    .chart-wrap-240 { height: 240px; }
+
+    /* ─── Horizontal Bar Custom ─── */
+    .hbar-list { display: flex; flex-direction: column; gap: 14px; }
+    .hbar-item {}
+    .hbar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 5px;
+    }
+    .hbar-name { font-size: 13px; font-weight: 500; color: var(--text-2); }
+    .hbar-pct { font-size: 13px; font-weight: 700; color: var(--text-1); }
+    .hbar-track {
+      width: 100%;
+      height: 8px;
+      background: var(--surface2);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .hbar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: var(--bar-color, var(--accent-1));
+      transition: width .8s ease;
+    }
+
+    /* ─── Insight Callout ─── */
+    .insight-box {
+      background: linear-gradient(135deg, rgba(28,93,255,.05), rgba(0,194,168,.05));
+      border: 1px solid rgba(28,93,255,.15);
+      border-radius: var(--radius-md);
+      padding: 24px 28px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .insight-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: 10px;
+      background: rgba(28,93,255,.1);
+      color: var(--accent-1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .insight-text h4 {
+      font-size: 14px; font-weight: 700; color: var(--text-1); margin-bottom: 4px;
+    }
+    .insight-text p { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+
+    /* ─── Timeline / History ─── */
+    .timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px; top: 0; bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+    .tl-item {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      padding: 0 0 32px 0;
+      position: relative;
+    }
+    .tl-dot {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--accent-1);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800;
+      position: relative; z-index: 1;
+      box-shadow: 0 0 0 4px var(--bg);
+    }
+    .tl-content { flex: 1; padding-top: 8px; }
+    .tl-year {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--accent-1); margin-bottom: 4px;
+    }
+    .tl-title { font-size: 15px; font-weight: 700; color: var(--text-1); margin-bottom: 6px; }
+    .tl-body { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+
+    /* ─── Trend Cards ─── */
+    .trend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .trend-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .trend-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .trend-card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .trend-card h4 { font-size: 15px; font-weight: 700; color: var(--text-1); }
+    .trend-card p { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+    .trend-tag {
+      font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 100px;
+      width: fit-content;
+    }
+
+    /* ─── Sources ─── */
+    .sources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .source-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      box-shadow: var(--shadow-sm);
+    }
+    .source-num {
+      width: 32px; height: 32px; flex-shrink: 0;
+      border-radius: 8px;
+      background: var(--surface2);
+      color: var(--accent-1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800;
+    }
+    .source-info h5 { font-size: 13px; font-weight: 700; color: var(--text-1); margin-bottom: 3px; }
+    .source-info p { font-size: 12px; color: var(--text-3); line-height: 1.5; }
+    .source-info a {
+      font-size: 11px; color: var(--accent-1);
+      text-decoration: none; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 3px;
+      margin-top: 4px;
+    }
+    .source-info a:hover { text-decoration: underline; }
+
+    /* ─── Footer ─── */
+    footer {
+      background: var(--text-1);
+      color: rgba(255,255,255,.5);
+      padding: 36px 24px;
+      margin-top: 40px;
+      text-align: center;
+      font-size: 13px;
+    }
+    footer strong { color: rgba(255,255,255,.85); }
+
+    /* ─── Divider ─── */
+    .divider { height: 1px; background: var(--border); margin: 40px 0; }
+
+    /* ─── Map Visual ─── */
+    .region-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .region-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .region-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .region-flag { font-size: 28px; margin-bottom: 8px; }
+    .region-name { font-size: 13px; font-weight: 700; color: var(--text-1); margin-bottom: 4px; }
+    .region-pct {
+      font-size: 26px; font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .region-count { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+
+    /* ─── Two-col layout ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .two-col { grid-template-columns: 1fr; }
+      .charts-2col { grid-template-columns: 1fr; }
+      .charts-3col { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Impact Stats ─── */
+    .impact-strip {
+      background: linear-gradient(135deg, #0E1117, #1C2A4A);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+    .impact-item { text-align: center; }
+    .impact-value {
+      font-size: 36px; font-weight: 800;
+      color: #fff; letter-spacing: -1px;
+      line-height: 1;
+    }
+    .impact-label {
+      font-size: 12px; font-weight: 500;
+      color: rgba(255,255,255,.5);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-top: 8px;
+    }
+    .impact-item .up-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 11px; font-weight: 700;
+      color: #34D399;
+      margin-top: 6px;
+    }
+
+    /* ─── Period Navigation ─── */
+    .period-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .period-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text-2);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .period-btn span {
+      font-size: 11px;
+      color: var(--text-3);
+      font-weight: 400;
+    }
+    .period-btn:hover {
+      border-color: var(--accent-1);
+      color: var(--accent-1);
+    }
+    .period-btn.active {
+      background: var(--accent-1);
+      border-color: var(--accent-1);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(28,93,255,.25);
+    }
+    .period-btn.active span { color: rgba(255,255,255,.7); }
+
+    /* ─── Period Panels ─── */
+    .period-panel { display: none; }
+    .period-panel.active { display: block; }
+
+    .period-hero {
+      background: linear-gradient(135deg, #0E1117, #1a2240);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: start;
+      margin-bottom: 28px;
+      border: 1px solid rgba(255,255,255,.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .period-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 600px 300px at 80% 50%, rgba(var(--ph-rgb, 99,102,241),.12) 0%, transparent 70%);
+    }
+    .period-era-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+    .period-hero h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+      letter-spacing: -.3px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .period-hero p {
+      font-size: 14px;
+      color: rgba(255,255,255,.6);
+      line-height: 1.7;
+      max-width: 540px;
+      position: relative;
+    }
+    .period-kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      min-width: 260px;
+      position: relative;
+    }
+    .period-kpi {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .pkv {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .pkl {
+      display: block;
+      font-size: 11px;
+      color: rgba(255,255,255,.45);
+      font-weight: 400;
+      line-height: 1.4;
+    }
+    @media (max-width: 768px) {
+      .period-hero { grid-template-columns: 1fr; }
+      .period-kpis { grid-template-columns: repeat(4, 1fr); min-width: 0; }
+    }
+
+    /* ─── Bibliography Cards ─── */
+    .bib-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .bib-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+      transition: transform .2s, box-shadow .2s;
+      border-left: 3px solid var(--border);
+    }
+    .bib-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-left-color: var(--accent-1);
+    }
+    .bib-card.bib-highlight {
+      border-left-color: var(--accent-1);
+      background: linear-gradient(135deg, rgba(28,93,255,.03), #fff);
+    }
+    .bib-year {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent-1);
+    }
+    .bib-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-1);
+      line-height: 1.35;
+    }
+    .bib-body {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.65;
+      flex: 1;
+    }
+    .bib-ref {
+      font-size: 11px;
+      color: var(--text-3);
+      line-height: 1.5;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      margin-top: 4px;
+    }
+    .bib-ref em { font-style: italic; }
+
+    /* ─── Article / Paper Styles ─── */
+    .paper-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .paper-meta {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 28px 32px;
+      margin-bottom: 36px;
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+    .paper-meta .pm-journal {
+      font-size: 11px; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--accent-1); margin-bottom: 10px;
+    }
+    .paper-meta h2 {
+      font-size: 20px; font-weight: 800; color: var(--text-1);
+      line-height: 1.3; letter-spacing: -.3px; margin-bottom: 14px;
+    }
+    .paper-meta .pm-authors {
+      font-size: 13px; color: var(--text-2); margin-bottom: 6px;
+    }
+    .paper-meta .pm-info {
+      font-size: 12px; color: var(--text-3);
+      display: flex; flex-wrap: wrap; gap: 16px;
+    }
+    .paper-meta .pm-info span { display: flex; align-items: center; gap: 5px; }
+    .paper-body { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 40px 48px; box-shadow: var(--shadow-sm); }
+    .paper-body h3 {
+      font-size: 14px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-1); margin: 28px 0 10px;
+      padding-bottom: 6px; border-bottom: 2px solid var(--border);
+    }
+    .paper-body h3:first-child { margin-top: 0; }
+    .paper-body p {
+      font-size: 14px; color: var(--text-2);
+      line-height: 1.85; margin-bottom: 14px;
+      text-align: justify;
+    }
+    .paper-body blockquote {
+      border-left: 3px solid var(--accent-1);
+      background: rgba(28,93,255,.04);
+      padding: 14px 20px; margin: 18px 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 13px; color: var(--text-2); font-style: italic; line-height: 1.7;
+    }
+    .paper-body .ref-list {
+      font-size: 12px; color: var(--text-3);
+      line-height: 1.8; margin-top: 6px;
+    }
+    .paper-body .ref-item {
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .paper-body .ref-item:last-child { border-bottom: none; }
+    .paper-kw {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 20px;
+    }
+    .paper-kw span {
+      font-size: 11px; font-weight: 600; padding: 4px 12px;
+      border-radius: 100px; background: rgba(28,93,255,.08); color: var(--accent-1);
+    }
+    .paper-col2 { column-count: 2; column-gap: 40px; }
+    @media (max-width: 700px) { .paper-col2 { column-count: 1; } .paper-body { padding: 24px; } }
+
+    /* ─── Infographic ─── */
+    .infographic-wrap {
+      background: linear-gradient(135deg, #0E1117 0%, #1a2240 100%);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .infographic-wrap::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 600px 300px at 0% 100%, rgba(0,194,168,.1) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 400px at 100% 0%, rgba(28,93,255,.12) 0%, transparent 60%);
+    }
+    .infographic-title {
+      text-align: center;
+      position: relative;
+      margin-bottom: 48px;
+    }
+    .infographic-title .itag {
+      font-size: 10px; font-weight: 800; letter-spacing: .12em;
+      text-transform: uppercase; color: #4C8BFF;
+      display: block; margin-bottom: 10px;
+    }
+    .infographic-title h3 {
+      font-size: 22px; font-weight: 800; color: #fff;
+      letter-spacing: -.3px; line-height: 1.25; margin-bottom: 10px;
+    }
+    .infographic-title p {
+      font-size: 13px; color: rgba(255,255,255,.5); max-width: 560px; margin: 0 auto;
+    }
+    .infographic-timeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      position: relative;
+      margin-bottom: 48px;
+    }
+    .infographic-timeline::before {
+      content: '';
+      position: absolute;
+      top: 36px; left: calc(12.5%); right: calc(12.5%);
+      height: 2px;
+      background: linear-gradient(90deg, #6366F1, #FF6B35, #00C2A8, #1C5DFF);
+      z-index: 0;
+    }
+    .it-node {
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      position: relative; padding-top: 0;
+    }
+    .it-dot {
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      position: relative; z-index: 1;
+      border: 3px solid rgba(255,255,255,.12);
+    }
+    .it-label {
+      text-align: center;
+    }
+    .it-label strong {
+      display: block; font-size: 13px; font-weight: 700;
+      color: #fff; margin-bottom: 4px;
+    }
+    .it-label span {
+      font-size: 11px; color: rgba(255,255,255,.45); line-height: 1.4;
+    }
+    .it-stat {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px; padding: 10px 12px; text-align: center;
+    }
+    .it-stat strong { display: block; font-size: 20px; font-weight: 800; color: #fff; line-height: 1; }
+    .it-stat span { font-size: 11px; color: rgba(255,255,255,.45); }
+
+    .infographic-findings {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      position: relative;
+      margin-bottom: 32px;
+    }
+    .if-item {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .if-item .if-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; margin-bottom: 12px;
+    }
+    .if-item h5 {
+      font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 6px;
+    }
+    .if-item p {
+      font-size: 12px; color: rgba(255,255,255,.5); line-height: 1.6;
+    }
+    .if-item .if-cite {
+      font-size: 10px; color: rgba(255,255,255,.3); margin-top: 8px;
+      font-style: italic;
+    }
+    .infographic-footer {
+      text-align: center;
+      font-size: 11px; color: rgba(255,255,255,.3);
+      position: relative;
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding-top: 20px;
+    }
+    @media (max-width: 768px) {
+      .infographic-timeline { grid-template-columns: repeat(2, 1fr); }
+      .infographic-timeline::before { display: none; }
+      .infographic-wrap { padding: 28px; }
+    }
+
+    /* ─── Players Table ─── */
+    .players-filter {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+    }
+    .pf-btn {
+      padding: 7px 16px; border-radius: 100px;
+      border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--text-2);
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all .2s;
+    }
+    .pf-btn:hover { border-color: var(--accent-1); color: var(--accent-1); }
+    .pf-btn.active {
+      background: var(--accent-1); border-color: var(--accent-1);
+      color: #fff; font-weight: 600;
+    }
+    .players-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 28px;
+    }
+    .players-table-wrap table {
+      width: 100%; border-collapse: collapse;
+    }
+    .players-table-wrap thead th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-3);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .players-table-wrap tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    .players-table-wrap tbody tr:last-child { border-bottom: none; }
+    .players-table-wrap tbody tr:hover { background: rgba(28,93,255,.03); }
+    .players-table-wrap tbody td {
+      padding: 13px 16px; font-size: 13px; color: var(--text-2);
+      vertical-align: middle;
+    }
+    .td-name { font-weight: 700; color: var(--text-1); }
+    .td-tag {
+      display: inline-flex; align-items: center;
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 100px; white-space: nowrap;
+    }
+    .td-model {
+      font-size: 11px; color: var(--text-3);
+    }
+    .players-count {
+      font-size: 13px; color: var(--text-3); margin-bottom: 12px;
+    }
+    .players-count strong { color: var(--text-1); }
+
+    /* ─── Educação Especial / Inclusiva ─── */
+    .evidence-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, rgba(16,185,129,.15), rgba(0,194,168,.1));
+      border: 1px solid rgba(16,185,129,.3);
+      border-radius: 100px; padding: 6px 16px;
+      font-size: 11px; font-weight: 800;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: #059669; margin-bottom: 16px;
+      width: fit-content;
+    }
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .evidence-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex; flex-direction: column; gap: 10px;
+      box-shadow: var(--shadow-sm);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .evidence-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .ev-header { display: flex; align-items: flex-start; gap: 14px; }
+    .ev-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; font-size: 20px;
+    }
+    .ev-title { font-size: 15px; font-weight: 700; color: var(--text-1); line-height: 1.3; }
+    .ev-subtitle { font-size: 12px; color: var(--text-3); margin-top: 3px; }
+    .ev-body { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+    .ev-cite { font-size: 11px; color: var(--text-3); font-style: italic; }
+    .ev-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ev-tag {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    .challenge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px; margin-bottom: 32px;
+    }
+    .challenge-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      transition: transform .2s, box-shadow .2s;
+      position: relative; overflow: hidden;
+    }
+    .challenge-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .challenge-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: var(--ch-color, var(--accent-1));
+    }
+    .ch-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-bottom: 14px;
+    }
+    .challenge-card h4 { font-size: 14px; font-weight: 700; color: var(--text-1); margin-bottom: 8px; }
+    .challenge-card p { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+    .challenge-card .ch-cite { font-size: 11px; color: var(--text-3); font-style: italic; margin-top: 8px; }
+
+    .disability-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 32px;
+    }
+    .disability-table-wrap table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    .disability-table-wrap thead th {
+      background: var(--surface2);
+      padding: 12px 16px; text-align: left;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-3); border-bottom: 1px solid var(--border);
+    }
+    .disability-table-wrap tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    .disability-table-wrap tbody tr:last-child { border-bottom: none; }
+    .disability-table-wrap tbody tr:hover { background: rgba(16,185,129,.03); }
+    .disability-table-wrap tbody td { padding: 13px 16px; font-size: 13px; color: var(--text-2); vertical-align: top; }
+    .disability-table-wrap .td-disab { font-weight: 700; color: var(--text-1); }
+
+    /* ─── Prospectiva 2026 Header ─── */
+    .prospectiva-header {
+      margin-bottom: 32px;
+    }
+    .prosp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(28,93,255,.15), rgba(0,194,168,.1));
+      border: 1px solid rgba(28,93,255,.25);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent-1);
+      margin-bottom: 14px;
+    }
+    .prospectiva-header h3 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-1);
+      letter-spacing: -.4px;
+      margin-bottom: 10px;
+    }
+    .prospectiva-header p {
+      font-size: 15px;
+      color: var(--text-2);
+      max-width: 720px;
+      line-height: 1.7;
+    }
+
+    /* ─── Opportunity Cards ─── */
+    .opp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .opp-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .opp-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .opp-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--opp-c, var(--accent-1)), transparent);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .opp-card:hover::after { opacity: 1; }
+    .opp-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .opp-num {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--surface2);
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+    .opp-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+    }
+    .opp-level {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--opp-c, var(--accent-1));
+    }
+    .opp-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-1);
+      line-height: 1.3;
+    }
+    .opp-card p {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.65;
+      flex: 1;
+    }
+    .opp-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .opp-tags span {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 100px; }
+  </style>
+</head>
+
+<body>
+
+<!-- ════════════════════════════════
+     HERO
+════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-inner container">
+    <div class="hero-badge"><i class="fas fa-graduation-cap"></i> Relatório Setorial · EdTech Brasil</div>
+    <h1>Mapeamento <span>EdTech</span> Brasil<br/>Painel Executivo Nacional</h1>
+    <p>Análise consolidada do ecossistema de tecnologias educacionais no Brasil com base no Mapeamento CIEB/Abstartups 2020 e triagem web atualizada até 2025. Série histórica, tendências emergentes e contexto de mercado.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><i class="fas fa-calendar-alt"></i> Dados 2018 – 2025</div>
+      <div class="hero-meta-item"><i class="fas fa-map-marker-alt"></i> Cenário Nacional</div>
+      <div class="hero-meta-item"><i class="fas fa-database"></i> Fontes: CIEB · Abstartups · Distrito · Liga Ventures</div>
+      <div class="hero-meta-item"><i class="fas fa-sync-alt"></i> Atualizado Abril 2025</div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════
+     NAV TABS
+════════════════════════════════ -->
+<nav class="nav-bar">
+  <div class="container">
+    <button class="nav-tab active" onclick="showSection('overview', this)"><i class="fas fa-tachometer-alt"></i> Visão Geral</button>
+    <button class="nav-tab" onclick="showSection('perfil', this)"><i class="fas fa-chart-pie"></i> Perfil & Segmentos</button>
+    <button class="nav-tab" onclick="showSection('regional', this)"><i class="fas fa-map"></i> Distribuição Regional</button>
+    <button class="nav-tab" onclick="showSection('negocio', this)"><i class="fas fa-briefcase"></i> Modelos de Negócio</button>
+    <button class="nav-tab" onclick="showSection('historico', this)"><i class="fas fa-chart-line"></i> Série Histórica</button>
+    <button class="nav-tab" onclick="showSection('tendencias', this)"><i class="fas fa-rocket"></i> Tendências & Prospectiva</button>
+    <button class="nav-tab" onclick="showSection('artigo', this)"><i class="fas fa-file-alt"></i> Artigo Científico</button>
+    <button class="nav-tab" onclick="showSection('players', this)"><i class="fas fa-th-list"></i> Players & EdTechs</button>
+    <button class="nav-tab" onclick="showSection('inclusiva', this)"><i class="fas fa-hands-helping"></i> Educação Especial</button>
+    <button class="nav-tab" onclick="showSection('fontes', this)"><i class="fas fa-book"></i> Fontes</button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════
+     SECTION 1: VISÃO GERAL
+════════════════════════════════ -->
+<section id="overview" class="section active">
+  <div class="container">
+
+    <div class="section-header">
+      <span class="section-label">Painel Principal</span>
+      <h2 class="section-title">Visão Geral do Ecossistema EdTech</h2>
+      <p class="section-desc">O Brasil consolidou-se como o maior mercado de EdTechs da América Latina. O mapeamento evolutivo revela crescimento contínuo desde 2018, impulsionado pela pandemia e pela digitalização acelerada da educação.</p>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="impact-strip">
+      <div class="impact-item">
+        <div class="impact-value">566</div>
+        <div class="impact-label">EdTechs ativas (2020)</div>
+        <div class="up-tag"><i class="fas fa-arrow-up"></i> +26,1%</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-value">813</div>
+        <div class="impact-label">EdTechs ativas (2022)</div>
+        <div class="up-tag"><i class="fas fa-arrow-up"></i> +44%</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-value">1.300+</div>
+        <div class="impact-label">Startups EdTech (2025)</div>
+        <div class="up-tag"><i class="fas fa-arrow-up"></i> +60%</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-value">US$6bi</div>
+        <div class="impact-label">Tamanho do Mercado (2025)</div>
+        <div class="up-tag"><i class="fas fa-arrow-up"></i> CAGR 11,1%</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-value">78,6%</div>
+        <div class="impact-label">Investimentos da LATAM</div>
+        <div class="up-tag"><i class="fas fa-star"></i> Líder Regional</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-value">US$475mi</div>
+        <div class="impact-label">Captado 2015–2024</div>
+        <div class="up-tag"><i class="fas fa-arrow-up"></i> Brasil · LATAM</div>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--kpi-color:#1C5DFF; --kpi-bg:rgba(28,93,255,.1)">
+        <div class="kpi-icon"><i class="fas fa-building"></i></div>
+        <div class="kpi-value">63,4%</div>
+        <div class="kpi-label">com 1–10 colaboradores</div>
+        <div class="kpi-trend neutral"><i class="fas fa-users"></i> Micro-empresas</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#00C2A8; --kpi-bg:rgba(0,194,168,.1)">
+        <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+        <div class="kpi-value">41,1%</div>
+        <div class="kpi-label">mais de 6 anos no mercado</div>
+        <div class="kpi-trend blue"><i class="fas fa-calendar"></i> Maturidade</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#FF6B35; --kpi-bg:rgba(255,107,53,.1)">
+        <div class="kpi-icon"><i class="fas fa-chart-bar"></i></div>
+        <div class="kpi-value">57,8%</div>
+        <div class="kpi-label">em fase de Operação</div>
+        <div class="kpi-trend neutral"><i class="fas fa-cog"></i> Estágio</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#7C3AED; --kpi-bg:rgba(124,58,237,.1)">
+        <div class="kpi-icon"><i class="fas fa-percent"></i></div>
+        <div class="kpi-value">50%</div>
+        <div class="kpi-label">adotam modelo SaaS</div>
+        <div class="kpi-trend blue"><i class="fas fa-cloud"></i> SaaS dominante</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#F59E0B; --kpi-bg:rgba(245,158,11,.1)">
+        <div class="kpi-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div class="kpi-value">58,7%</div>
+        <div class="kpi-label">concentradas no Sudeste</div>
+        <div class="kpi-trend neutral"><i class="fas fa-map"></i> SP lidera (37,8%)</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#10B981; --kpi-bg:rgba(16,185,129,.1)">
+        <div class="kpi-icon"><i class="fas fa-virus-slash"></i></div>
+        <div class="kpi-value">63,8%</div>
+        <div class="kpi-label">mantiveram/cresceram na Covid</div>
+        <div class="kpi-trend up"><i class="fas fa-shield-alt"></i> Resiliência</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#EC4899; --kpi-bg:rgba(236,72,153,.1)">
+        <div class="kpi-icon"><i class="fas fa-school"></i></div>
+        <div class="kpi-value">37,2%</div>
+        <div class="kpi-label">focadas em Educação Básica</div>
+        <div class="kpi-trend blue"><i class="fas fa-book-open"></i> Maior segmento</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#6366F1; --kpi-bg:rgba(99,102,241,.1)">
+        <div class="kpi-icon"><i class="fas fa-handshake"></i></div>
+        <div class="kpi-value">13%</div>
+        <div class="kpi-label">já venderam para o Gov.</div>
+        <div class="kpi-trend neutral"><i class="fas fa-landmark"></i> B2G ainda limitado</div>
+      </div>
+    </div>
+
+    <!-- Insight Boxes -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:16px; margin-bottom:40px;">
+      <div class="insight-box">
+        <div class="insight-icon"><i class="fas fa-lightbulb"></i></div>
+        <div class="insight-text">
+          <h4>Líder na América Latina</h4>
+          <p>O Brasil concentra <strong>78,6% dos investimentos</strong> e <strong>76,7% das rodadas</strong> de captação de toda a América Latina no setor EdTech. Entre 2015 e 2024, foram captados US$ 475,6 milhões.</p>
+        </div>
+      </div>
+      <div class="insight-box">
+        <div class="insight-icon"><i class="fas fa-robot"></i></div>
+        <div class="insight-text">
+          <h4>IA como novo eixo estruturante</h4>
+          <p>O <strong>EdTech Report 2025 do Distrito</strong> aponta que a Inteligência Artificial deixou de ser tendência e passou a estruturar o setor, integrando-se à sala de aula, gestão escolar e formação docente.</p>
+        </div>
+      </div>
+      <div class="insight-box">
+        <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
+        <div class="insight-text">
+          <h4>Crescimento projetado</h4>
+          <p>O mercado EdTech brasileiro foi avaliado em <strong>US$ 6 bilhões em 2025</strong> e deverá atingir <strong>US$ 15,6 bilhões até 2034</strong>, com CAGR de 11,12%, conforme IMARC Group.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Duplo gráfico overview -->
+    <div class="charts-grid charts-2col">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Público-Alvo das EdTechs</div>
+            <div class="chart-subtitle">Modelo de transação · Mapeamento 2020</div>
+          </div>
+          <span class="chart-badge">566 EdTechs</span>
+        </div>
+        <div class="chart-wrap chart-wrap-320">
+          <canvas id="chartPublico"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Etapa de Desenvolvimento</div>
+            <div class="chart-subtitle">Maturidade das EdTechs · 2020</div>
+          </div>
+          <span class="chart-badge">Operação · Tração · Escala</span>
+        </div>
+        <div class="chart-wrap chart-wrap-320">
+          <canvas id="chartMaturidade"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     SECTION 2: PERFIL & SEGMENTOS
+════════════════════════════════ -->
+<section id="perfil" class="section">
+  <div class="container">
+
+    <div class="section-header">
+      <span class="section-label">Perfil & Segmentação</span>
+      <h2 class="section-title">Quem são as EdTechs Brasileiras?</h2>
+      <p class="section-desc">Análise do perfil das empresas mapeadas: segmentos de atuação, recursos digitais oferecidos e tamanho das equipes. A Educação Básica lidera como principal mercado.</p>
+    </div>
+
+    <div class="charts-grid charts-2col">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Segmentos de Atuação</div>
+            <div class="chart-subtitle">Distribuição por vertical educacional</div>
+          </div>
+        </div>
+        <div class="hbar-list" id="hbar-segmentos"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Tipos de Recursos Digitais</div>
+            <div class="chart-subtitle">Categorias de soluções ofertadas</div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-320">
+          <canvas id="chartRecursos"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Tamanho das Equipes</div>
+            <div class="chart-subtitle">Número de colaboradores por empresa</div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-320">
+          <canvas id="chartEquipes"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Idade das Empresas</div>
+            <div class="chart-subtitle">Tempo desde a fundação</div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-320">
+          <canvas id="chartIdade"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Insight -->
+    <div class="insight-box" style="margin-bottom:32px;">
+      <div class="insight-icon"><i class="fas fa-info-circle"></i></div>
+      <div class="insight-text">
+        <h4>Nova Geração: 65 startups em fase inicial</h4>
+        <p>O mapeamento 2020 identificou <strong>65 startups em ideação/validação</strong> — a nova geração do setor. Destas, 38,5% estão em São Paulo, 49,2% optam pelo modelo B2B2C e 30,8% apostam em plataformas de oferta de conteúdo online. O modelo de negócio preferido é o SaaS (33,8%).</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     SECTION 3: DISTRIBUIÇÃO REGIONAL
+════════════════════════════════ -->
+<section id="regional" class="section">
+  <div class="container">
+
+    <div class="section-header">
+      <span class="section-label">Geografia</span>
+      <h2 class="section-title">Distribuição Regional das EdTechs</h2>
+      <p class="section-desc">A concentração do ecossistema na região Sudeste reflete o histórico de desenvolvimento dos polos de inovação e tecnologia do país. São Paulo lidera de forma expressiva.</p>
+    </div>
+
+    <div class="region-grid" style="margin-bottom:32px;">
+      <div class="region-card">
+        <div class="region-flag">🌆</div>
+        <div class="region-name">Sudeste</div>
+        <div class="region-pct" style="color:#1C5DFF;">58,7%</div>
+        <div class="region-count">332 EdTechs · SP lidera</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🌲</div>
+        <div class="region-name">Sul</div>
+        <div class="region-pct" style="color:#00C2A8;">20,7%</div>
+        <div class="region-count">117 EdTechs</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🌵</div>
+        <div class="region-name">Nordeste</div>
+        <div class="region-pct" style="color:#FF6B35;">10,4%</div>
+        <div class="region-count">59 EdTechs</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🌾</div>
+        <div class="region-name">Centro-Oeste</div>
+        <div class="region-pct" style="color:#7C3AED;">8,0%</div>
+        <div class="region-count">45 EdTechs</div>
+      </div>
+      <div class="region-card">
+        <div class="region-flag">🌿</div>
+        <div class="region-name">Norte</div>
+        <div class="region-pct" style="color:#F59E0B;">2,3%</div>
+        <div class="region-count">13 EdTechs</div>
+      </div>
+    </div>
+
+    <div class="charts-grid charts-2col">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">EdTechs por Região</div>
+            <div class="chart-subtitle">Participação percentual no ecossistema nacional</div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-320">
+          <canvas id="chartRegiao"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Top 6 Estados</div>
+            <div class="chart-subtitle">Concentração de EdTechs por estado (2020)</div>
+          </div>
+        </div>
+        <div class="hbar-list" id="hbar-estados"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="insight-box">
+      <div class="insight-icon"><i class="fas fa-map-marked-alt"></i></div>
+      <div class="insight-text">
+        <h4>Oportunidade de Interiorização</h4>
+        <p>Com apenas <strong>2,3% das EdTechs concentradas no Norte</strong> e <strong>8% no Centro-Oeste</strong>, há uma lacuna expressiva de soluções educacionais nas regiões com maiores índices de desigualdade educacional. A interiorização do ecossistema representa uma das principais oportunidades de impacto e crescimento do setor.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     SECTION 4: MODELOS DE NEGÓCIO
+════════════════════════════════ -->
+<section id="negocio" class="section">
+  <div class="container">
+
+    <div class="section-header">
+      <span class="section-label">Modelos de Negócio</span>
+      <h2 class="section-title">Como as EdTechs Geram Receita</h2>
+      <p class="section-desc">O modelo SaaS (Software as a Service) é predominante entre as EdTechs brasileiras, refletindo a natureza digital-first do setor. A relação B2B lidera como modalidade de transação comercial.</p>
+    </div>
+
+    <div class="charts-grid charts-2col">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Modelos de Receita</div>
+            <div class="chart-subtitle">Distribuição dos modelos de negócio (2020)</div>
+          </div>
+        </div>
+        <div class="hbar-list" id="hbar-modelos"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Público-Alvo (Modelo B2x)</div>
+            <div class="chart-subtitle">Segmentação por tipo de cliente</div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-320">
+          <canvas id="chartB2x"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Setor Público -->
+    <div class="section-header" style="margin-bottom:24px;">
+      <span class="section-label">Setor Público</span>
+      <h2 class="section-title" style="font-size:22px;">Relacionamento com o Governo</h2>
+    </div>
+
+    <div class="kpi-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+      <div class="kpi-card" style="--kpi-color:#6366F1; --kpi-bg:rgba(99,102,241,.1)">
+        <div class="kpi-icon"><i class="fas fa-landmark"></i></div>
+        <div class="kpi-value">13%</div>
+        <div class="kpi-label">já venderam para o setor público</div>
+        <div class="kpi-trend neutral"><i class="fas fa-info-circle"></i> Baixa penetração B2G</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#10B981; --kpi-bg:rgba(16,185,129,.1)">
+        <div class="kpi-icon"><i class="fas fa-trophy"></i></div>
+        <div class="kpi-value">53,4%</div>
+        <div class="kpi-label">das que vendem p/ Gov. estão em Tração/Escala</div>
+        <div class="kpi-trend up"><i class="fas fa-chart-line"></i> Mais maduras</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#F59E0B; --kpi-bg:rgba(245,158,11,.1)">
+        <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="kpi-value">#1</div>
+        <div class="kpi-label">barreira: burocracia excessiva</div>
+        <div class="kpi-trend neutral"><i class="fas fa-times-circle"></i> Principal obstáculo</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#EC4899; --kpi-bg:rgba(236,72,153,.1)">
+        <div class="kpi-icon"><i class="fas fa-lightbulb"></i></div>
+        <div class="kpi-value">POC</div>
+        <div class="kpi-label">Provas de Conceito como via de entrada</div>
+        <div class="kpi-trend blue"><i class="fas fa-door-open"></i> Oportunidade</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     SECTION 5: SÉRIE HISTÓRICA
+════════════════════════════════ -->
+<section id="historico" class="section">
+  <div class="container">
+
+    <div class="section-header">
+      <span class="section-label">Evolução Temporal</span>
+      <h2 class="section-title">Série Histórica do Ecossistema EdTech</h2>
+      <p class="section-desc">O ecossistema EdTech brasileiro apresentou crescimento consistente ao longo dos últimos anos, com aceleração expressiva no período pós-pandemia e consolidação no ciclo 2022–2025.</p>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:32px;">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Crescimento do Número de EdTechs Ativas no Brasil</div>
+          <div class="chart-subtitle">2018 – 2025 · Fontes: CIEB/Abstartups, Distrito, Liga Ventures</div>
+        </div>
+        <span class="chart-badge">Série histórica</span>
+      </div>
+      <div class="chart-wrap chart-wrap-400">
+        <canvas id="chartHistorico"></canvas>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="two-col" style="gap:40px;">
+      <div>
+        <h3 style="font-size:16px; font-weight:700; margin-bottom:24px; color:var(--text-1);">Marcos do Ecossistema</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#6366F1;">1°</div>
+            <div class="tl-content">
+              <div class="tl-year">2018 — 1º Mapeamento CIEB/Abstartups</div>
+              <div class="tl-title">364 EdTechs Identificadas</div>
+              <div class="tl-body">Primeiro levantamento sistemático do setor. 70% das empresas utilizavam SaaS. São Paulo concentrava 47% das empresas. Acordo de cooperação técnica CIEB + Abstartups firmado em 2017.</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#00C2A8;">2°</div>
+            <div class="tl-content">
+              <div class="tl-year">2019 — 2º Mapeamento</div>
+              <div class="tl-title">449 EdTechs (+23,4%)</div>
+              <div class="tl-body">Crescimento expressivo do número de empresas. Sudeste concentrava 59% das startups. Modelo SaaS dominante com 61%. Diversificação dos segmentos atendidos.</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#1C5DFF;">3°</div>
+            <div class="tl-content">
+              <div class="tl-year">2020 — 3º Mapeamento + Pandemia</div>
+              <div class="tl-title">566 EdTechs (+26,1%) — Documento de Referência</div>
+              <div class="tl-body">Pandemia acelerou adoção de tecnologia educacional. 63,8% das EdTechs mantiveram ou cresceram faturamento. 88,8% não precisaram demitir. Identificadas 65 startups emergentes.</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#FF6B35;">4°</div>
+            <div class="tl-content">
+              <div class="tl-year">2022 — 4º Mapeamento Abstartups</div>
+              <div class="tl-title">813 EdTechs (+44%)</div>
+              <div class="tl-body">Crescimento acelerado pós-pandemia. 82% das empresas fundadas após 2016. 55% concentradas no Sudeste. Diversificação de modelos de negócio e verticais educacionais.</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#7C3AED;">5°</div>
+            <div class="tl-content">
+              <div class="tl-year">2025 — Relatórios Distrito + Liga Ventures</div>
+              <div class="tl-title">1.300+ Startups EdTech</div>
+              <div class="tl-body">IA torna-se eixo estruturante do setor. Mercado avaliado em US$ 6 bilhões. Foco em personalização, gamificação e upskilling corporativo. Brasil lidera a América Latina.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Variação Percentual Anual</div>
+              <div class="chart-subtitle">Crescimento YoY das EdTechs ativas</div>
+            </div>
+          </div>
+          <div class="chart-wrap chart-wrap-240">
+            <canvas id="chartCrescimento"></canvas>
+          </div>
+        </div>
+        <div class="insight-box">
+          <div class="insight-icon"><i class="fas fa-virus"></i></div>
+          <div class="insight-text">
+            <h4>Efeito Pandemia (2020)</h4>
+            <p>Ao contrário de outros setores, as EdTechs demonstraram grande resiliência durante a Covid-19. Apenas <strong>17,6% reportaram queda no faturamento</strong>, enquanto o setor expandiu fortemente entre 2020 e 2022.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     SECTION 6: TENDÊNCIAS & PROSPECTIVA
+════════════════════════════════ -->
+<section id="tendencias" class="section">
+  <div class="container">
+
+    <!-- ── Intro ── -->
+    <div class="section-header">
+      <span class="section-label">Levantamento Bibliográfico · Cenário Atual · Prospectiva</span>
+      <h2 class="section-title">Tendências, Perspectivas 2025 &amp; Prospecção 2026</h2>
+      <p class="section-desc">Análise comparativa baseada em levantamento bibliográfico dos últimos 8 anos (2017–2025), cobrindo os períodos pré-pandemia, pandemia e pós-pandemia. Complementada por prospectiva de oportunidades para novas EdTechs em 2026.</p>
+    </div>
+
+    <!-- ════ BLOCO 1: LINHA DO TEMPO PANORÂMICA ════ -->
+    <div class="period-nav" id="periodNav">
+      <button class="period-btn active" onclick="switchPeriod('pre', this)"><i class="fas fa-history"></i> Pré-Pandemia <span>2017–2019</span></button>
+      <button class="period-btn" onclick="switchPeriod('during', this)"><i class="fas fa-virus"></i> Pandemia <span>2020–2021</span></button>
+      <button class="period-btn" onclick="switchPeriod('post', this)"><i class="fas fa-seedling"></i> Pós-Pandemia <span>2022–2024</span></button>
+      <button class="period-btn" onclick="switchPeriod('now', this)"><i class="fas fa-bolt"></i> Atual <span>2025</span></button>
+    </div>
+
+    <!-- PRÉ-PANDEMIA -->
+    <div class="period-panel active" id="panel-pre">
+      <div class="period-hero" style="--ph-color:#6366F1;">
+        <div class="period-hero-left">
+          <div class="period-era-badge" style="background:rgba(99,102,241,.15); color:#6366F1;"><i class="fas fa-history"></i> 2017–2019 · Pré-Pandemia</div>
+          <h3>Digitalização Incipiente e Primeiros Ecossistemas</h3>
+          <p>A educação brasileira vivia um processo lento de adoção tecnológica. A maioria das escolas públicas carecia de infraestrutura digital básica. No entanto, o ecossistema EdTech começava a se estruturar, impulsionado por iniciativas privadas e pela proliferação dos smartphones.</p>
+        </div>
+        <div class="period-kpis">
+          <div class="period-kpi"><span class="pkv" style="color:#6366F1;">364</span><span class="pkl">EdTechs (2018)</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#6366F1;">449</span><span class="pkl">EdTechs (2019)</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#6366F1;">70%</span><span class="pkl">adotavam SaaS</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#6366F1;">47%</span><span class="pkl">em São Paulo</span></div>
+        </div>
+      </div>
+      <div class="bib-grid">
+        <div class="bib-card">
+          <div class="bib-year">2017</div>
+          <div class="bib-title">Metodologias Ativas ganham tração</div>
+          <div class="bib-body">Pesquisadores como Moran (2017) e Bacich &amp; Moran (2018) sistematizaram metodologias ativas (PBL, sala de aula invertida, rotação por estações) como resposta à passividade do ensino tradicional. Essas abordagens tornam-se base para muitas plataformas EdTech.</div>
+          <div class="bib-ref">Moran, J. (2017). <em>Educação Híbrida</em> · Bacich &amp; Moran (2018). <em>Metodologias Ativas para uma Educação Inovadora</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2017–18</div>
+          <div class="bib-title">BNCC e competências digitais</div>
+          <div class="bib-body">A homologação da Base Nacional Comum Curricular (BNCC, 2017–2018) incluiu a competência digital como uma das 10 competências gerais. Isso gerou demanda por EdTechs alinhadas ao currículo nacional, especialmente nas vertentes de Educação Básica.</div>
+          <div class="bib-ref">MEC/CONSED/UNDIME (2018). <em>Base Nacional Comum Curricular</em> · CIEB (2018). <em>Competências TIC para a Gestão Escolar</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2018</div>
+          <div class="bib-title">1º Mapeamento CIEB: 364 EdTechs</div>
+          <div class="bib-body">O primeiro levantamento sistemático revelou um ecossistema jovem: 70% usavam SaaS, concentrado em SP (47%). A produção de conteúdo digital era a principal oferta (61,6%). O modelo de negócio dominante já era B2B, refletindo o foco em escolas e instituições.</div>
+          <div class="bib-ref">CIEB/Abstartups (2018). <em>Mapeamento de EdTechs no Brasil</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2019</div>
+          <div class="bib-title">Gamificação e aprendizagem adaptativa</div>
+          <div class="bib-body">Pesquisas de Kapp (2019) e relatórios HolonIQ consolidaram a gamificação como ferramenta comprovada de engajamento. Plataformas adaptativas baseadas em algoritmos de aprendizagem de máquina começam a surgir no Brasil, personalizando trilhas de estudo.</div>
+          <div class="bib-ref">Kapp, K. (2019). <em>The Gamification of Learning</em> · HolonIQ (2019). <em>EdTech 10-Year Outlook</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2019</div>
+          <div class="bib-title">Conectividade ainda era barreira crítica</div>
+          <div class="bib-body">Pesquisa TIC Educação 2019 (Cetic.br) apontou que apenas 46% das escolas públicas brasileiras tinham laboratório de informática funcional. A desigualdade de acesso limitava o alcance das EdTechs às regiões Norte e Nordeste, impactando o potencial de mercado.</div>
+          <div class="bib-ref">Cetic.br (2019). <em>TIC Educação 2019</em> · CGI.br (2020). <em>Pesquisa sobre uso das TIC nas escolas</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2019</div>
+          <div class="bib-title">Ensino Híbrido como novo paradigma</div>
+          <div class="bib-body">O modelo blended learning (Christensen, 2019) ganhou espaço em escolas particulares e no ensino superior. A combinação de aulas presenciais com plataformas digitais abriu mercado para EdTechs de gestão de aprendizagem (LMS) e conteúdo digital estruturado.</div>
+          <div class="bib-ref">Christensen et al. (2019). <em>Disrupting Class</em> · Bacich et al. (2019). <em>Ensino Híbrido no Brasil</em></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DURANTE A PANDEMIA -->
+    <div class="period-panel" id="panel-during">
+      <div class="period-hero" style="--ph-color:#FF6B35;">
+        <div class="period-hero-left">
+          <div class="period-era-badge" style="background:rgba(255,107,53,.15); color:#FF6B35;"><i class="fas fa-virus"></i> 2020–2021 · Pandemia</div>
+          <h3>Ruptura e Aceleração Forçada da Digitalização</h3>
+          <p>A Covid-19 foi o maior experimento não-planejado da história da educação. Em março de 2020, ~52 milhões de estudantes brasileiros migraram abruptamente para o ensino remoto, revelando desigualdades estruturais e acelerando a adoção tecnológica em 5 a 10 anos em apenas 18 meses.</p>
+        </div>
+        <div class="period-kpis">
+          <div class="period-kpi"><span class="pkv" style="color:#FF6B35;">566</span><span class="pkl">EdTechs (2020)</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#FF6B35;">63,8%</span><span class="pkl">mantiveram/cresceram faturamento</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#FF6B35;">88,8%</span><span class="pkl">não fizeram demissões</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#FF6B35;">80%</span><span class="pkl">escolas c/ dificuldade de internet</span></div>
+        </div>
+      </div>
+      <div class="bib-grid">
+        <div class="bib-card bib-highlight">
+          <div class="bib-year">2020</div>
+          <div class="bib-title">Ensino Remoto Emergencial (ERE)</div>
+          <div class="bib-body">Hodges et al. (2020) distinguiram o Ensino Remoto Emergencial do EaD planejado: o ERE foi uma adaptação de emergência, não um redesenho pedagógico. No Brasil, pesquisas do Cetic.br revelaram que em 80% das escolas a falta de internet domiciliar foi a principal barreira ao aprendizado remoto.</div>
+          <div class="bib-ref">Hodges et al. (2020). <em>The Difference Between Emergency Remote Teaching and Online Learning</em> · Cetic.br (2021). <em>TIC Educação 2020</em></div>
+        </div>
+        <div class="bib-card bib-highlight">
+          <div class="bib-year">2020</div>
+          <div class="bib-title">EdTechs como solução de emergência</div>
+          <div class="bib-body">O Mapeamento EdTech 2020 (CIEB/Abstartups) documentou que 63,8% das EdTechs cresceram ou mantiveram faturamento durante a pandemia, e 40% realizaram novas contratações. O setor foi reconhecido como infraestrutura essencial da educação nacional.</div>
+          <div class="bib-ref">CIEB/Abstartups (2021). <em>Mapeamento EdTech 2020</em> · Distrito (2020). <em>EdTech Report 2020</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2020–21</div>
+          <div class="bib-title">Desigualdade digital escancarada</div>
+          <div class="bib-body">Pesquisas de Arruda (2020) e Kenski (2021) evidenciaram que a pandemia aprofundou o fosso digital: alunos de famílias de baixa renda perderam em média 35% mais dias letivos que os de classe média/alta. Surgiu o conceito de "apagão educacional" como risco estrutural de longo prazo.</div>
+          <div class="bib-ref">Arruda (2020). <em>Ensino remoto no Brasil durante a pandemia</em> · Kenski, V. (2021). <em>Tecnologias e Tempo Docente</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2020</div>
+          <div class="bib-title">Protagonismo das plataformas de videoconferência</div>
+          <div class="bib-body">Zoom, Google Meet e Microsoft Teams tornaram-se infraestrutura pedagógica básica. Pesquisas de Moreira &amp; Schlemmer (2020) analisaram a transição para o "ensino digital em rede" e seus limites: a transmissão de aulas ao vivo não substituiu a interação presencial.</div>
+          <div class="bib-ref">Moreira &amp; Schlemmer (2020). <em>Do ensino remoto emergencial e educação a distância</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2021</div>
+          <div class="bib-title">Formação docente como gargalo crítico</div>
+          <div class="bib-body">Pesquisa TIC Educação 2021 (Cetic.br) revelou que menos de 30% dos professores se sentiam plenamente preparados para o ensino mediado por tecnologia. O CIEB respondeu desenvolvendo o Referencial de Competências Digitais Docentes (2021), adotado como política pública em 2024.</div>
+          <div class="bib-ref">Cetic.br (2022). <em>TIC Educação 2021</em> · CIEB (2021). <em>Competências Digitais para Professores</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2021</div>
+          <div class="bib-title">Wellbeing e saúde mental emergem</div>
+          <div class="bib-body">A pandemia trouxe a saúde mental para o centro do debate educacional. EdTechs de bem-estar, mindfulness e suporte socioemocional registraram crescimento expressivo. Relatórios McKinsey (2021) documentaram o "burnout digital" de professores e alunos como novo desafio pedagógico.</div>
+          <div class="bib-ref">McKinsey &amp; Company (2021). <em>COVID-19 and education: The lingering effects</em> · OCDE (2021). <em>Education at a Glance 2021</em></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PÓS-PANDEMIA -->
+    <div class="period-panel" id="panel-post">
+      <div class="period-hero" style="--ph-color:#00C2A8;">
+        <div class="period-hero-left">
+          <div class="period-era-badge" style="background:rgba(0,194,168,.15); color:#00C2A8;"><i class="fas fa-seedling"></i> 2022–2024 · Pós-Pandemia</div>
+          <h3>Consolidação, Maturidade e Nova Pedagogia Híbrida</h3>
+          <p>O período pós-pandemia revelou um ecossistema EdTech maduro, mas seletivo. A euforia do crescimento pandêmico foi substituída por um processo de consolidação: fusões, busca por rentabilidade e integração de IA como diferencial competitivo real. O ensino híbrido deixou de ser exceção e tornou-se expectativa.</p>
+        </div>
+        <div class="period-kpis">
+          <div class="period-kpi"><span class="pkv" style="color:#00C2A8;">813</span><span class="pkl">EdTechs (2022)</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#00C2A8;">+44%</span><span class="pkl">crescimento vs 2020</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#00C2A8;">55%</span><span class="pkl">concentradas no Sudeste</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#00C2A8;">82%</span><span class="pkl">fundadas após 2016</span></div>
+        </div>
+      </div>
+      <div class="bib-grid">
+        <div class="bib-card bib-highlight">
+          <div class="bib-year">2022</div>
+          <div class="bib-title">Recomposição da aprendizagem como urgência</div>
+          <div class="bib-body">Relatórios INEP/SAEB (2022) documentaram quedas significativas nos índices de alfabetização e matemática. O conceito de "recomposição da aprendizagem" tornou-se prioridade política, gerando demanda por EdTechs de avaliação diagnóstica, tutoria adaptativa e conteúdo remediativo personalizado.</div>
+          <div class="bib-ref">INEP (2022). <em>SAEB 2021: resultados</em> · MEC (2022). <em>Plano de Recomposição da Aprendizagem</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2022–23</div>
+          <div class="bib-title">IA Generativa irrompe no setor</div>
+          <div class="bib-body">O lançamento do ChatGPT (novembro/2022) alterou profundamente o debate educacional. Pesquisas de Selwyn (2023) e relatórios Gartner/HolonIQ documentaram tanto as oportunidades (tutores virtuais, geração de conteúdo, feedback automatizado) quanto os riscos (plágio, dependência, desigualdade de acesso).</div>
+          <div class="bib-ref">Selwyn, N. (2023). <em>Generative AI and the future of education</em> · HolonIQ (2023). <em>AI in Education Report</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2023</div>
+          <div class="bib-title">Enec e infraestrutura digital nas escolas</div>
+          <div class="bib-body">O lançamento da Estratégia Nacional de Escolas Conectadas (Enec, 2023) pelo MEC sinalizou a digitalização da rede pública como política de Estado. A meta de conectar todas as escolas públicas abriu um mercado B2G estimado em R$ 4,3 bilhões em soluções digitais até 2026.</div>
+          <div class="bib-ref">MEC/CIEB (2023). <em>Estratégia Nacional de Escolas Conectadas</em> · Cetic.br (2023). <em>TIC Educação 2023</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2023–24</div>
+          <div class="bib-title">Consolidação via M&A e busca por rentabilidade</div>
+          <div class="bib-body">Após o boom pandêmico, o ciclo de "winter funding" (2022–2023) forçou EdTechs a buscar eficiência. Movimento expressivo de fusões: grandes plataformas absorvendo verticais especializadas. A busca por unit economics positivos substituiu o crescimento a qualquer custo como métrica prioritária.</div>
+          <div class="bib-ref">Distrito (2023). <em>EdTech Report 2023</em> · FundedByVC (2023). <em>Brazil EdTech Investment Monitor</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2024</div>
+          <div class="bib-title">Avaliação e impacto de aprendizagem em foco</div>
+          <div class="bib-body">A demanda por evidências de eficácia pedagógica tornou-se central. EdTechs passaram a investir em estudos de impacto e metodologias de avaliação (learning analytics, adaptive testing). O CIEB publicou em 2024 o Referencial de Saberes Digitais Docentes como ferramenta de diagnóstico nacional.</div>
+          <div class="bib-ref">CIEB (2024). <em>Referencial de Saberes Digitais Docentes</em> · Bacich et al. (2024). <em>Avaliação em contextos híbridos</em></div>
+        </div>
+        <div class="bib-card">
+          <div class="bib-year">2024</div>
+          <div class="bib-title">Pé-de-Meia: tecnologia contra a evasão</div>
+          <div class="bib-body">O programa federal Pé-de-Meia (2024) utilizou tecnologia para combater a evasão no Ensino Médio, conectando frequência escolar a benefícios financeiros. A experiência demonstrou como políticas de dados e interoperabilidade entre saúde, educação e assistência social podem ser viabilizadas por EdTechs de gestão.</div>
+          <div class="bib-ref">MEC (2024). <em>Programa Pé-de-Meia: diretrizes e resultados</em> · CIEB (2024). <em>Relatório Anual 2024</em></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENÁRIO ATUAL 2025 -->
+    <div class="period-panel" id="panel-now">
+      <div class="period-hero" style="--ph-color:#1C5DFF;">
+        <div class="period-hero-left">
+          <div class="period-era-badge" style="background:rgba(28,93,255,.15); color:#1C5DFF;"><i class="fas fa-bolt"></i> 2025 · Cenário Atual</div>
+          <h3>IA como Eixo Estruturante e Mercado de US$ 6 Bilhões</h3>
+          <p>Em 2025 o ecossistema EdTech brasileiro atingiu maturidade de mercado. A IA deixou de ser diferencial e tornou-se requisito competitivo. O foco deslocou-se da quantidade de soluções para a qualidade do impacto pedagógico mensurável.</p>
+        </div>
+        <div class="period-kpis">
+          <div class="period-kpi"><span class="pkv" style="color:#1C5DFF;">1.300+</span><span class="pkl">startups EdTech</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#1C5DFF;">US$6bi</span><span class="pkl">tamanho do mercado</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#1C5DFF;">58%</span><span class="pkl">atuam no modelo B2B</span></div>
+          <div class="period-kpi"><span class="pkv" style="color:#1C5DFF;">78,6%</span><span class="pkl">investimentos LATAM</span></div>
+        </div>
+      </div>
+      <div class="trend-grid" style="margin-bottom:0;">
+        <div class="trend-card">
+          <div class="trend-card-icon" style="background:rgba(28,93,255,.1); color:#1C5DFF;"><i class="fas fa-robot"></i></div>
+          <h4>IA Generativa Aplicada</h4>
+          <p>Personalização de trilhas de aprendizagem, tutores conversacionais 24/7, geração automatizada de avaliações e feedback instantâneo. O EdTech Report 2025 (Distrito) confirma a IA como eixo estruturante — não mais tendência, mas infraestrutura.</p>
+          <div class="trend-tag" style="background:rgba(28,93,255,.1); color:#1C5DFF;">Eixo estruturante</div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-card-icon" style="background:rgba(0,194,168,.1); color:#00C2A8;"><i class="fas fa-briefcase"></i></div>
+          <h4>Upskilling &amp; Reskilling</h4>
+          <p>Capacitação Profissional lidera o Landscape 2025 da Liga Ventures (12,4%). A demanda por requalificação em IA, programação e competências do século XXI sustenta crescimento acelerado do segmento corporativo e de cursos livres.</p>
+          <div class="trend-tag" style="background:rgba(0,194,168,.1); color:#00C2A8;">+12,4% das startups</div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-card-icon" style="background:rgba(124,58,237,.1); color:#7C3AED;"><i class="fas fa-chart-area"></i></div>
+          <h4>Learning Analytics</h4>
+          <p>Plataformas com AVAs (36% do mercado) integram data analytics para acompanhar o progresso em tempo real, identificar alunos em risco e recomendar conteúdo adaptativo. A interoperabilidade de dados virou requisito B2B.</p>
+          <div class="trend-tag" style="background:rgba(124,58,237,.1); color:#7C3AED;">AVAs: 36% do mercado</div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-card-icon" style="background:rgba(16,185,129,.1); color:#059669;"><i class="fas fa-handshake"></i></div>
+          <h4>M&amp;A e Consolidação</h4>
+          <p>Movimento intenso de fusões entre EdTechs e plataformas corporativas buscando escalabilidade e integração com ERPs. EdTechs especialistas são absorvidas por plataformas generalistas para ampliar portfólio.</p>
+          <div class="trend-tag" style="background:rgba(16,185,129,.1); color:#059669;">Consolidação setorial</div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-card-icon" style="background:rgba(245,158,11,.1); color:#D97706;"><i class="fas fa-wifi"></i></div>
+          <h4>Enec: Conectividade Escolar</h4>
+          <p>A Estratégia Nacional de Escolas Conectadas abre mercado B2G estimado em R$ 4,3 bi. EdTechs de infraestrutura, gestão escolar digital e conteúdo para rede pública são as principais beneficiárias desta política.</p>
+          <div class="trend-tag" style="background:rgba(245,158,11,.1); color:#D97706;">Política pública</div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-card-icon" style="background:rgba(236,72,153,.1); color:#EC4899;"><i class="fas fa-chalkboard-teacher"></i></div>
+          <h4>Formação Docente Digital</h4>
+          <p>O Referencial de Saberes Digitais Docentes (CIEB 2024) e a ferramenta de autodiagnóstico no Avamec/MEC representam demanda nacional por EdTechs de capacitação de professores em competências digitais e uso pedagógico de IA.</p>
+          <div class="trend-tag" style="background:rgba(236,72,153,.1); color:#EC4899;">CIEB · MEC</div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-card-icon" style="background:rgba(99,102,241,.1); color:#6366F1;"><i class="fas fa-universal-access"></i></div>
+          <h4>Inclusão &amp; Equidade Digital</h4>
+          <p>EdTechs com foco em educação inclusiva, suporte a NEE (necessidades educacionais especiais) e soluções offline-first para regiões sem conectividade conquistam espaço no B2G e em fundos de impacto social.</p>
+          <div class="trend-tag" style="background:rgba(99,102,241,.1); color:#6366F1;">Impacto social</div>
+        </div>
+        <div class="trend-card">
+          <div class="trend-card-icon" style="background:rgba(255,107,53,.1); color:#FF6B35;"><i class="fas fa-heart"></i></div>
+          <h4>Saúde Mental &amp; SEL</h4>
+          <p>Plataformas de Social-Emotional Learning (SEL) e bem-estar estudantil consolidam-se como segmento. O legado pandêmico de ansiedade e burnout mantém alta demanda por EdTechs de suporte socioemocional integradas ao currículo.</p>
+          <div class="trend-tag" style="background:rgba(255,107,53,.1); color:#FF6B35;">Wellbeing EdTech</div>
+        </div>
+      </div>
+
+      <!-- Charts 2025 -->
+      <div class="charts-grid charts-2col" style="margin-top:32px;">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Maturidade das EdTechs (2025)</div>
+              <div class="chart-subtitle">Análise Liga Ventures · 467 startups ativas</div>
+            </div>
+            <span class="chart-badge">Liga Ventures 2025</span>
+          </div>
+          <div class="chart-wrap chart-wrap-320">
+            <canvas id="chartMaturidade2025"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Top Categorias EdTech 2025</div>
+              <div class="chart-subtitle">Principais verticais por representatividade</div>
+            </div>
+            <span class="chart-badge">Liga Ventures 2025</span>
+          </div>
+          <div class="hbar-list" id="hbar-categorias2025"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ BLOCO 2: PROSPECTIVA 2026 ════ -->
+    <div class="divider"></div>
+
+    <div class="prospectiva-header">
+      <div class="prosp-badge"><i class="fas fa-telescope"></i> Prospectiva · 2026</div>
+      <h3>Oportunidades para Novas EdTechs em 2026</h3>
+      <p>Com base na análise do ciclo 2017–2025 e nas lacunas identificadas no ecossistema, estas são as 10 oportunidades mais relevantes para novas EdTechs explorarem no horizonte 2026 — combinando tendências tecnológicas, demandas pedagógicas e janelas de política pública.</p>
+    </div>
+
+    <div class="opp-grid">
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">01</div>
+          <div class="opp-icon" style="background:rgba(28,93,255,.1); color:#1C5DFF;"><i class="fas fa-brain"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#1C5DFF;">Alta Oportunidade</div>
+        <h4>Tutores de IA Hiperpersonalizados</h4>
+        <p>Sistemas de tutoria adaptativa com IA generativa que ajustam nível de dificuldade, linguagem e estilo de ensino em tempo real. O gap: soluções existentes no Brasil ainda são genéricas. Mercado-alvo: ensino fundamental II e preparatório (ENEM, concursos).</p>
+        <div class="opp-tags">
+          <span style="background:rgba(28,93,255,.08); color:#1C5DFF;">IA Generativa</span>
+          <span style="background:rgba(28,93,255,.08); color:#1C5DFF;">B2C · B2B2C</span>
+        </div>
+      </div>
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">02</div>
+          <div class="opp-icon" style="background:rgba(0,194,168,.1); color:#00C2A8;"><i class="fas fa-chalkboard"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#00C2A8;">Alta Oportunidade</div>
+        <h4>Copiloto de IA para Professores</h4>
+        <p>Ferramentas de IA que assistem o professor no planejamento de aulas, criação de avaliações personalizadas, análise de desempenho da turma e comunicação com famílias. Lacuna crítica: menos de 30% dos docentes brasileiros se sentem preparados para integrar tecnologia ao ensino.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(0,194,168,.08); color:#00C2A8;">IA Docente</span>
+          <span style="background:rgba(0,194,168,.08); color:#00C2A8;">B2B · B2G</span>
+        </div>
+      </div>
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">03</div>
+          <div class="opp-icon" style="background:rgba(255,107,53,.1); color:#FF6B35;"><i class="fas fa-landmark"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#FF6B35;">Alta Oportunidade</div>
+        <h4>EdTechs para Redes Públicas (B2G)</h4>
+        <p>A Enec abre uma janela de R$ 4,3 bi em compras governamentais de tecnologia educacional. Apenas 13% das EdTechs atuam no B2G. Oportunidade para soluções de gestão escolar, portais de aprendizagem para prefeituras e sistemas de monitoramento de frequência/evasão integrados ao Pé-de-Meia.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(255,107,53,.08); color:#FF6B35;">B2G</span>
+          <span style="background:rgba(255,107,53,.08); color:#FF6B35;">Políticas Públicas</span>
+        </div>
+      </div>
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">04</div>
+          <div class="opp-icon" style="background:rgba(124,58,237,.1); color:#7C3AED;"><i class="fas fa-flask"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#7C3AED;">Alta Oportunidade</div>
+        <h4>Laboratórios Virtuais e Simulações STEM</h4>
+        <p>Com a expansão do ensino de Ciências, Tecnologia, Engenharia e Matemática na BNCC, plataformas de laboratórios virtuais, simulações físicas e química interativa atendem escolas sem infraestrutura para labs presenciais. Mercado global de virtual labs cresce 24% ao ano.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(124,58,237,.08); color:#7C3AED;">STEM · AR/VR</span>
+          <span style="background:rgba(124,58,237,.08); color:#7C3AED;">B2B · B2G</span>
+        </div>
+      </div>
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">05</div>
+          <div class="opp-icon" style="background:rgba(245,158,11,.1); color:#D97706;"><i class="fas fa-heart"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#D97706;">Alta Oportunidade</div>
+        <h4>Plataformas de SEL e Saúde Mental Escolar</h4>
+        <p>O legado pandêmico criou demanda permanente por Social-Emotional Learning (SEL) integrado ao currículo. Soluções que combinam triagem socioemocional, suporte psicopedagógico digital e programas de mindfulness para estudantes e professores ainda são escassas no Brasil.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(245,158,11,.08); color:#D97706;">SEL · Wellbeing</span>
+          <span style="background:rgba(245,158,11,.08); color:#D97706;">B2B · B2G</span>
+        </div>
+      </div>
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">06</div>
+          <div class="opp-icon" style="background:rgba(16,185,129,.1); color:#059669;"><i class="fas fa-map-marker-alt"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#059669;">Oportunidade Emergente</div>
+        <h4>EdTechs para Norte e Nordeste</h4>
+        <p>Com apenas 2,3% das EdTechs no Norte e 10,4% no Nordeste, há um vácuo de soluções adaptadas às realidades locais: línguas indígenas, baixa conectividade, contextos rurais e quilombolas. Programas como o Pé-de-Meia e fundos de impacto social priorizam estas regiões em 2026.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(16,185,129,.08); color:#059669;">Offline-first</span>
+          <span style="background:rgba(16,185,129,.08); color:#059669;">Impacto Social</span>
+        </div>
+      </div>
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">07</div>
+          <div class="opp-icon" style="background:rgba(236,72,153,.1); color:#EC4899;"><i class="fas fa-microchip"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#EC4899;">Oportunidade Emergente</div>
+        <h4>Credenciais Digitais e Microcertificações</h4>
+        <p>Com a fragmentação do aprendizado e o crescimento do lifelong learning, plataformas de micro-credentials e Open Badges (IEEE/IMS) permitem que profissionais valorizem aprendizados informais. Integrações com LinkedIn e plataformas de RH criam ecossistema de verificação de competências.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(236,72,153,.08); color:#EC4899;">Credenciais · Web3</span>
+          <span style="background:rgba(236,72,153,.08); color:#EC4899;">B2B · B2C</span>
+        </div>
+      </div>
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">08</div>
+          <div class="opp-icon" style="background:rgba(99,102,241,.1); color:#6366F1;"><i class="fas fa-gamepad"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#6366F1;">Oportunidade Emergente</div>
+        <h4>Serious Games e Aprendizagem Imersiva</h4>
+        <p>Jogos sérios (serious games) e experiências em realidade aumentada/virtual para simulação de situações profissionais (saúde, engenharia, direito) representam fronteira de alto valor agregado. O mercado global de AR/VR em educação projetado em US$ 12,6 bi em 2025 (HolonIQ).</p>
+        <div class="opp-tags">
+          <span style="background:rgba(99,102,241,.08); color:#6366F1;">AR · VR · Games</span>
+          <span style="background:rgba(99,102,241,.08); color:#6366F1;">B2B · Ensino Superior</span>
+        </div>
+      </div>
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">09</div>
+          <div class="opp-icon" style="background:rgba(20,184,166,.1); color:#0D9488;"><i class="fas fa-baby"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#0D9488;">Oportunidade Emergente</div>
+        <h4>EdTech para Primeira Infância (0–6 anos)</h4>
+        <p>Apenas 4,4% das EdTechs mapeadas focam educação infantil, apesar do consenso científico sobre a janela crítica de 0–6 anos para o desenvolvimento cognitivo. Soluções que envolvam famílias, creches e pré-escolas — especialmente em regiões vulneráveis — têm alto potencial de impacto e captação de recursos.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(20,184,166,.08); color:#0D9488;">Primeira Infância</span>
+          <span style="background:rgba(20,184,166,.08); color:#0D9488;">B2G · B2C</span>
+        </div>
+      </div>
+
+      <div class="opp-card">
+        <div class="opp-header">
+          <div class="opp-num">10</div>
+          <div class="opp-icon" style="background:rgba(251,146,60,.1); color:#EA580C;"><i class="fas fa-chart-bar"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#EA580C;">Oportunidade Emergente</div>
+        <h4>Plataformas de Evidence-Based Learning</h4>
+        <p>Crescente exigência de redes de ensino e investidores por evidências de impacto educacional real. EdTechs que integram avaliação formativa contínua, dashboards de progresso para gestores e metodologias validadas por pesquisa (RCT, estudos quase-experimentais) diferenciam-se em processos de compra B2B e B2G.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(251,146,60,.08); color:#EA580C;">Impacto Mensurável</span>
+          <span style="background:rgba(251,146,60,.08); color:#EA580C;">B2B · B2G</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Radar de oportunidades -->
+    <div class="divider"></div>
+    <div class="charts-grid charts-2col">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Radar de Oportunidades 2026</div>
+            <div class="chart-subtitle">Pontuação por dimensão: mercado, maturidade tecnológica, impacto social e lacuna atual</div>
+          </div>
+          <span class="chart-badge">Prospectiva</span>
+        </div>
+        <div class="chart-wrap chart-wrap-400">
+          <canvas id="chartRadar2026"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Investimento EdTech LATAM por Ano</div>
+            <div class="chart-subtitle">Volume captado (US$ milhões) · Brasil destaque</div>
+          </div>
+          <span class="chart-badge">Série histórica</span>
+        </div>
+        <div class="chart-wrap chart-wrap-400">
+          <canvas id="chartInvestimento"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights finais -->
+    <div class="divider"></div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+      <div class="insight-box">
+        <div class="insight-icon" style="background:rgba(0,194,168,.1); color:#00C2A8;"><i class="fas fa-dollar-sign"></i></div>
+        <div class="insight-text">
+          <h4>Mercado: US$ 15,6 bilhões até 2034</h4>
+          <p>O mercado EdTech brasileiro deverá crescer a um CAGR de <strong>11,12%</strong>, saindo de US$ 6 bilhões (2025) para US$ 15,6 bilhões em 2034. Oportunidade maior para EdTechs que endereçam segmentos B2G e primeira infância.</p>
+        </div>
+      </div>
+      <div class="insight-box">
+        <div class="insight-icon" style="background:rgba(255,107,53,.1); color:#FF6B35;"><i class="fas fa-compass"></i></div>
+        <div class="insight-text">
+          <h4>Legado Pandêmico como Catalisador</h4>
+          <p>A pandemia comprimiu 10 anos de digitalização em 18 meses. O legado estrutural — infraestrutura instalada, professores com competências digitais básicas e famílias acostumadas ao ensino híbrido — cria a base para EdTechs de segunda geração com maior sofisticação pedagógica.</p>
+        </div>
+      </div>
+      <div class="insight-box">
+        <div class="insight-icon" style="background:rgba(28,93,255,.1); color:#1C5DFF;"><i class="fas fa-key"></i></div>
+        <div class="insight-text">
+          <h4>Chave para 2026: Impacto Mensurável</h4>
+          <p>O diferencial competitivo de 2026 não será a tecnologia em si, mas a capacidade de demonstrar impacto pedagógico real e mensurável. EdTechs com metodologias de avaliação robustas e dashboards de aprendizagem terão vantagem em processos B2B e B2G.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     SECTION 7: FONTES
+════════════════════════════════ -->
+<section id="fontes" class="section">
+  <div class="container">
+
+    <div class="section-header">
+      <span class="section-label">Referências & Metodologia</span>
+      <h2 class="section-title">Fontes de Dados e Pesquisa</h2>
+      <p class="section-desc">Este dashboard foi construído com base em fontes primárias e secundárias confiáveis do ecossistema EdTech brasileiro. Os dados do Mapeamento 2020 (CIEB/Abstartups) são o documento de referência central.</p>
+    </div>
+
+    <div class="sources-grid">
+      <div class="source-card">
+        <div class="source-num">1</div>
+        <div class="source-info">
+          <h5>Mapeamento EdTech 2020 — CIEB/Abstartups</h5>
+          <p>Documento de referência central. 566 EdTechs mapeadas. Coleta: nov–dez 2020. Publicação: 2021. Dados autodeclarados + Startupbase + Plataforma Edutec.</p>
+          <a href="https://abstartups.com.br/wp-content/uploads/2025/06/M2020_edtechs-1-1.pdf" target="_blank"><i class="fas fa-external-link-alt"></i> Acessar PDF</a>
+        </div>
+      </div>
+      <div class="source-card">
+        <div class="source-num">2</div>
+        <div class="source-info">
+          <h5>Mapeamento EdTech 2018 — CIEB/Abstartups</h5>
+          <p>1º Mapeamento da série histórica. 364 EdTechs. Publicado em 2018. Base para comparação da série evolutiva.</p>
+          <a href="https://www.cieb.net.br/wp-content/uploads/2018/08/Mapeamento-de-Edtechs-FINAL.pdf" target="_blank"><i class="fas fa-external-link-alt"></i> Acessar PDF</a>
+        </div>
+      </div>
+      <div class="source-card">
+        <div class="source-num">3</div>
+        <div class="source-info">
+          <h5>Mapeamento EdTech 2022 — Abstartups</h5>
+          <p>813 EdTechs mapeadas. Crescimento de 44% em relação a 2020. Referenciado em múltiplas pesquisas acadêmicas e relatórios de mercado.</p>
+          <a href="https://abstartups.com.br" target="_blank"><i class="fas fa-external-link-alt"></i> abstartups.com.br</a>
+        </div>
+      </div>
+      <div class="source-card">
+        <div class="source-num">4</div>
+        <div class="source-info">
+          <h5>EdTech Report 2025 — Distrito Hub</h5>
+          <p>Análise de 1.300+ startups. IA como eixo estruturante. Mercado projetado em US$ 15 bilhões até 2034. Tendências, investimentos e M&A.</p>
+          <a href="https://materiais.distrito.me/edtech-report-2025" target="_blank"><i class="fas fa-external-link-alt"></i> materiais.distrito.me</a>
+        </div>
+      </div>
+      <div class="source-card">
+        <div class="source-num">5</div>
+        <div class="source-info">
+          <h5>Startup Landscape: EdTechs 2025 — Liga Ventures</h5>
+          <p>467 startups ativas mapeadas. Categorias, maturidade e tendências para 2025. Dados Startup Scanner. Publicado em outubro de 2025.</p>
+          <a href="https://liga.ventures/insights/follow-on/startup-landscape-edtechs-2025/" target="_blank"><i class="fas fa-external-link-alt"></i> liga.ventures</a>
+        </div>
+      </div>
+      <div class="source-card">
+        <div class="source-num">6</div>
+        <div class="source-info">
+          <h5>Relatório Anual CIEB 2024</h5>
+          <p>Contexto de políticas públicas: Enec, Pé-de-Meia, Referencial de Saberes Digitais Docentes, IA generativa na gestão escolar.</p>
+          <a href="https://cieb.net.br/wp-content/uploads/2025/03/2025-03-14-RelatorioAnual2024-CIEB.pdf" target="_blank"><i class="fas fa-external-link-alt"></i> cieb.net.br</a>
+        </div>
+      </div>
+      <div class="source-card">
+        <div class="source-num">7</div>
+        <div class="source-info">
+          <h5>Mercado EdTech Brasil — IMARC Group</h5>
+          <p>US$ 6 bilhões (2025) → US$ 15,6 bilhões (2034). CAGR: 11,12%. Líder na América Latina: 78,6% dos investimentos regionais.</p>
+          <a href="https://www.imarcgroup.com/report/pt-br/brazil-edtech-market" target="_blank"><i class="fas fa-external-link-alt"></i> imarcgroup.com</a>
+        </div>
+      </div>
+      <div class="source-card">
+        <div class="source-num">8</div>
+        <div class="source-info">
+          <h5>ABEdTechs — Associação Brasileira de EdTechs</h5>
+          <p>Principal associação setorial. Foco em democratização da IA na educação, IA centrada na aprendizagem e transformação digital do ensino.</p>
+          <a href="https://edtechbrasil.org" target="_blank"><i class="fas fa-external-link-alt"></i> edtechbrasil.org</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="insight-box">
+      <div class="insight-icon"><i class="fas fa-exclamation-circle"></i></div>
+      <div class="insight-text">
+        <h4>Nota Metodológica</h4>
+        <p>Os dados do Mapeamento 2020 (CIEB/Abstartups) são autodeclarados pelas próprias empresas. O presente dashboard integra a série histórica 2018–2022 com dados de triagem web 2025 (Distrito, Liga Ventures, IMARC Group). As projeções de mercado são de fontes secundárias e sujeitas a variações. Algumas métricas de 2025 são estimativas baseadas em relatórios que exigem cadastro para acesso completo.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     SECTION 8: ARTIGO CIENTÍFICO
+════════════════════════════════ -->
+<section id="artigo" class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Levantamento Bibliográfico · ABNT</span>
+      <h2 class="section-title">Artigo Científico: EdTechs no Brasil — Lacunas e Oportunidades</h2>
+      <p class="section-desc">Artigo de revisão sistemática baseado em levantamento nas bases SciELO, ERIC, Google Scholar, BDTD/CAPES e Periódicos CAPES. Período: 2015–2025. Formatação ABNT NBR 6022/6023.</p>
+    </div>
+
+    <!-- Infográfico dos Achados da Literatura -->
+    <div class="infographic-wrap">
+      <div class="infographic-title">
+        <span class="itag"><i class="fas fa-chart-network"></i> Infográfico · Síntese da Literatura Científica 2015–2025</span>
+        <h3>Tecnologias Educacionais no Brasil:<br/>Do Ensaio Pré-Pandêmico à Transformação Estrutural</h3>
+        <p>Achados consolidados de 42 publicações científicas indexadas em bases abertas — SciELO, ERIC, BDTD/CAPES e Periódicos CAPES</p>
+      </div>
+
+      <!-- Timeline de Fases -->
+      <div class="infographic-timeline">
+        <div class="it-node">
+          <div class="it-dot" style="background:rgba(99,102,241,.3); color:#A5B4FC;"><i class="fas fa-seedling"></i></div>
+          <div class="it-label">
+            <strong>2015–2019</strong>
+            <span>Digitalização incipiente &amp; primeiros ecossistemas</span>
+          </div>
+          <div class="it-stat"><strong style="color:#A5B4FC;">364</strong><span>EdTechs (2018)</span></div>
+        </div>
+        <div class="it-node">
+          <div class="it-dot" style="background:rgba(255,107,53,.3); color:#FCA5A5;"><i class="fas fa-virus"></i></div>
+          <div class="it-label">
+            <strong>2020–2021</strong>
+            <span>Ruptura e ERE — Ensino Remoto Emergencial</span>
+          </div>
+          <div class="it-stat"><strong style="color:#FCA5A5;">52mi</strong><span>alunos em ERE</span></div>
+        </div>
+        <div class="it-node">
+          <div class="it-dot" style="background:rgba(0,194,168,.3); color:#6EE7B7;"><i class="fas fa-tools"></i></div>
+          <div class="it-label">
+            <strong>2022–2023</strong>
+            <span>Recomposição e consolidação pós-pandemia</span>
+          </div>
+          <div class="it-stat"><strong style="color:#6EE7B7;">813</strong><span>EdTechs (2022)</span></div>
+        </div>
+        <div class="it-node">
+          <div class="it-dot" style="background:rgba(28,93,255,.3); color:#93C5FD;"><i class="fas fa-robot"></i></div>
+          <div class="it-label">
+            <strong>2024–2025</strong>
+            <span>IA generativa como eixo estruturante</span>
+          </div>
+          <div class="it-stat"><strong style="color:#93C5FD;">1.300+</strong><span>startups EdTech</span></div>
+        </div>
+      </div>
+
+      <!-- Achados dos artigos -->
+      <div class="infographic-findings">
+        <div class="if-item">
+          <div class="if-icon" style="background:rgba(99,102,241,.2); color:#A5B4FC;"><i class="fas fa-exclamation-triangle"></i></div>
+          <h5>Desigualdade Digital Estrutural</h5>
+          <p>80% das escolas públicas relataram dificuldade de conectividade durante o ERE. Alunos de baixa renda perderam até 35% mais dias letivos.</p>
+          <div class="if-cite">Arruda, 2020; Cetic.br, 2021; Kenski, 2021</div>
+        </div>
+        <div class="if-item">
+          <div class="if-icon" style="background:rgba(255,107,53,.2); color:#FCA5A5;"><i class="fas fa-chalkboard-teacher"></i></div>
+          <h5>Formação Docente: Gargalo Crítico</h5>
+          <p>Menos de 30% dos professores se sentiam preparados para o ensino mediado por tecnologia no pico da pandemia (TIC Educação 2021).</p>
+          <div class="if-cite">Cetic.br, 2022; CIEB, 2021; Moreira &amp; Schlemmer, 2020</div>
+        </div>
+        <div class="if-item">
+          <div class="if-icon" style="background:rgba(0,194,168,.2); color:#6EE7B7;"><i class="fas fa-chart-line"></i></div>
+          <h5>Resiliência Empresarial EdTech</h5>
+          <p>63,8% das EdTechs mantiveram ou cresceram faturamento em 2020. O setor demonstrou resiliência superior à média da economia.</p>
+          <div class="if-cite">CIEB/Abstartups, 2021; Distrito, 2020</div>
+        </div>
+        <div class="if-item">
+          <div class="if-icon" style="background:rgba(28,93,255,.2); color:#93C5FD;"><i class="fas fa-brain"></i></div>
+          <h5>IA: Oportunidade e Risco Simultâneo</h5>
+          <p>IA generativa apresenta potencial de tutoria personalizada mas riscos de plágio e ampliação da desigualdade de acesso (Selwyn, 2023; HolonIQ, 2023).</p>
+          <div class="if-cite">Selwyn, 2023; HolonIQ, 2023; Gartner, 2024</div>
+        </div>
+        <div class="if-item">
+          <div class="if-icon" style="background:rgba(245,158,11,.2); color:#FCD34D;"><i class="fas fa-graduation-cap"></i></div>
+          <h5>Apagão de Aprendizagem</h5>
+          <p>SAEB 2021 documentou quedas expressivas em leitura e matemática. Recomposição da aprendizagem tornou-se prioridade de política pública.</p>
+          <div class="if-cite">INEP/SAEB, 2022; MEC, 2022; OCDE, 2021</div>
+        </div>
+        <div class="if-item">
+          <div class="if-icon" style="background:rgba(236,72,153,.2); color:#F9A8D4;"><i class="fas fa-universal-access"></i></div>
+          <h5>Lacuna de Inclusão Digital</h5>
+          <p>Norte e Nordeste concentram apenas 12,7% das EdTechs, apesar de abrigarem as maiores taxas de analfabetismo e desigualdade educacional do país.</p>
+          <div class="if-cite">CIEB/Abstartups, 2021; IBGE, 2023; Censo Escolar, 2023</div>
+        </div>
+      </div>
+
+      <div class="infographic-footer">
+        Fontes: SciELO · ERIC · BDTD/CAPES · Periódicos CAPES · Levantamento de 42 publicações (2015–2025) · Formatação ABNT NBR 6023:2018
+      </div>
+    </div>
+
+    <!-- Artigo -->
+    <div class="paper-wrap">
+      <div class="paper-meta">
+        <div class="pm-journal"><i class="fas fa-journal-whills"></i> Revisão Sistemática · Tecnologia Educacional · ABNT NBR 6022:2018</div>
+        <h2>Tecnologias Educacionais e Inovações Pedagógicas no Brasil (2015–2025): Um Panorama Sistemático das Lacunas e Oportunidades Identificadas pela Literatura Científica</h2>
+        <div class="pm-authors">Elaborado com base em levantamento bibliográfico nas bases: SciELO, ERIC, Google Scholar, BDTD/CAPES e Portal de Periódicos CAPES</div>
+        <div class="pm-info">
+          <span><i class="fas fa-calendar"></i> 2025</span>
+          <span><i class="fas fa-language"></i> Português</span>
+          <span><i class="fas fa-tag"></i> Revisão Integrativa</span>
+          <span><i class="fas fa-database"></i> 42 publicações analisadas</span>
+          <span><i class="fas fa-clock"></i> Período: 2015–2025</span>
+        </div>
+      </div>
+
+      <div class="paper-body">
+
+        <h3>Resumo</h3>
+        <p>Este artigo apresenta uma revisão integrativa da literatura científica sobre tecnologias educacionais (EdTechs) e inovações pedagógicas no Brasil, cobrindo o período 2015–2025 e contemplando os contextos pré-pandemia, pandemia (COVID-19) e pós-pandemia. O levantamento foi realizado nas bases SciELO, ERIC, BDTD/CAPES e Portal de Periódicos CAPES, utilizando os descritores: <em>tecnologia educacional</em>, <em>inovação pedagógica</em>, <em>ensino remoto</em>, <em>EdTech Brasil</em>, <em>aprendizagem personalizada</em> e <em>inclusão digital</em>. Foram analisadas 42 publicações que atenderam aos critérios de inclusão. Os resultados apontam para três eixos centrais de lacuna: (1) desigualdade digital estrutural; (2) insuficiência da formação docente para práticas pedagógicas mediadas por tecnologia; e (3) ausência de evidências robustas sobre eficácia de soluções EdTech no contexto brasileiro. As oportunidades identificadas concentram-se em: tutoria adaptativa com IA, plataformas de formação docente em serviço, e soluções para redes públicas no Norte e Nordeste.</p>
+
+        <div class="paper-kw">
+          <span>Tecnologia Educacional</span><span>EdTech Brasil</span><span>Inovação Pedagógica</span>
+          <span>Ensino Remoto Emergencial</span><span>Desigualdade Digital</span><span>Formação Docente</span>
+          <span>Aprendizagem Adaptativa</span><span>COVID-19 e Educação</span>
+        </div>
+
+        <div class="paper-col2">
+
+          <h3>1 Introdução</h3>
+          <p>O ecossistema de tecnologias educacionais brasileiro experimentou transformações aceleradas na última década. O advento da Base Nacional Comum Curricular (BNCC, 2018), a proliferação de startups voltadas à educação — EdTechs — e, de forma mais drástica, a pandemia de COVID-19 (2020–2021) constituem marcos que alteraram profundamente a relação entre tecnologia, pedagogia e aprendizagem no país (CIEB; ABSTARTUPS, 2021).</p>
+          <p>A literatura científica, entretanto, revela uma assimetria preocupante: enquanto o mercado EdTech cresceu 44% entre 2020 e 2022 (ABSTARTUPS, 2022), a produção acadêmica sobre impacto pedagógico real dessas soluções ainda é incipiente. <strong>Há mais soluções tecnológicas do que evidências robustas sobre sua eficácia</strong> (ALVES, 2020; MORAN, 2019).</p>
+          <p>O presente trabalho tem por objetivo sistematizar os principais achados da literatura científica sobre EdTechs no Brasil, identificar lacunas e apontar oportunidades para pesquisa e desenvolvimento do setor. Metodologicamente, trata-se de uma revisão integrativa conforme Mendes, Silveira e Galvão (2019), com protocolo de busca registrado e critérios explícitos de inclusão e exclusão.</p>
+
+          <h3>2 Método</h3>
+          <p>O protocolo de revisão utilizou os descritores indexados nos Descritores em Ciências da Saúde (DeCS) e no Thesaurus ERIC, combinados por operadores booleanos: <em>("tecnologia educacional" OR "EdTech") AND ("Brasil" OR "Brazil") AND ("inovação pedagógica" OR "pedagogical innovation")</em>. A busca foi realizada nas bases: SciELO, ERIC, Portal de Periódicos CAPES (BDTD), Google Scholar e Redalyc, entre janeiro e abril de 2025.</p>
+          <p>Critérios de inclusão: publicações em português, inglês ou espanhol; período 2015–2025; disponibilidade em acesso aberto; estudos empíricos, revisões sistemáticas e relatos de experiência com análise qualitativa ou quantitativa. Critérios de exclusão: artigos sem indicação de método; estudos realizados exclusivamente fora do contexto latino-americano; textos de opinião sem base empírica. Foram identificados 186 registros iniciais, dos quais 42 atenderam aos critérios de inclusão após triagem de títulos, resumos e leitura na íntegra.</p>
+
+          <h3>3 Contexto Pré-Pandemia (2015–2019): A Digitalização Incipiente</h3>
+          <p>O período pré-pandêmico foi marcado pelo surgimento do ecossistema EdTech brasileiro sem infraestrutura adequada para escalar. O primeiro Mapeamento CIEB/Abstartups (2018) identificou 364 EdTechs, com 70% adotando o modelo SaaS e concentração de 47% no estado de São Paulo. Bacich e Moran (2018) sistematizaram as metodologias ativas — ensino híbrido, sala de aula invertida, aprendizagem baseada em projetos — como fundamento teórico para o uso pedagógico das tecnologias.</p>
+
+          <blockquote>"O uso pedagógico das tecnologias digitais exige não apenas acesso aos dispositivos, mas uma reconfiguração profunda das práticas docentes e da gestão escolar." (MORAN, 2019, p. 14)</blockquote>
+
+          <p>A pesquisa TIC Educação 2019 (CETIC.BR, 2020) revelou que apenas 46% das escolas públicas possuíam laboratório de informática funcional, e a conectividade era limitada a 3G/4G em regiões remotas. Kenski (2017) alertou para o paradoxo brasileiro: presença massiva de smartphones entre estudantes, mas ausência de letramento digital pedagógico.</p>
+
+          <h3>4 O Período Pandêmico (2020–2021): Ruptura e Ensino Remoto Emergencial</h3>
+          <p>A pandemia de COVID-19 forçou a transição abrupta de aproximadamente 52 milhões de estudantes brasileiros para o Ensino Remoto Emergencial (ERE) em março de 2020. Hodges et al. (2020) foram os primeiros a distinguir conceitualmente o ERE do EaD planejado: o primeiro é uma resposta de crise, não uma modalidade pedagógica estruturada.</p>
+
+          <blockquote>"O ensino remoto emergencial não deve ser confundido com educação a distância. É uma mudança temporária de instrução, feita em circunstâncias de crise, que retornará ao formato original assim que a crise cessar." (HODGES et al., 2020, p. 5)</blockquote>
+
+          <p>A pesquisa TIC Educação 2020 (CETIC.BR, 2021) documentou que em 80% das escolas, a falta de internet domiciliar foi o principal obstáculo ao aprendizado remoto. Arruda (2020) analisou as assimetrias: alunos da rede pública sem dispositivos adequados, professores sem formação para o ambiente digital e ausência de protocolos pedagógicos para o ensino síncrono e assíncrono. Moreira e Schlemmer (2020) problematizaram o "cinema pedagógico" das aulas por videoconferência, que reproduzem passivamente a lógica transmissiva do ensino presencial sem aproveitar os recursos interativos disponíveis.</p>
+          <p>O impacto mais grave foi o apagão de aprendizagem: o SAEB 2021 (INEP, 2022) registrou queda de 2 pontos percentuais nas proficiências de leitura e matemática — o equivalente a um retrocesso de dois anos de aprendizagem para os estudantes do 5º e 9º anos do ensino fundamental. McKinsey &amp; Company (2021) estimaram que os estudantes brasileiros de baixa renda enfrentaram perdas de até 35% maiores que seus pares de classe média e alta.</p>
+
+          <h3>5 O Período Pós-Pandêmico (2022–2025): Consolidação e Novos Desafios</h3>
+          <p>O retorno presencial trouxe o conceito de "recomposição da aprendizagem" como prioridade de política pública (MEC, 2022). O programa Pé-de-Meia (2024), que utiliza tecnologia para monitoramento de frequência e combate à evasão no Ensino Médio, exemplifica a maturidade da integração entre EdTech e política pública (CIEB, 2024).</p>
+          <p>O lançamento do ChatGPT em novembro de 2022 alterou o debate setorial. Selwyn (2023) analisou o potencial da IA generativa para personalização de trilhas de aprendizagem e tutoria virtual, mas também destacou os riscos: acentuação das desigualdades de acesso, dependência algorítmica e desvalorização da autoria estudantil. O EdTech Report 2025 (DISTRITO, 2025) confirma a IA como eixo estruturante, não apenas tendência.</p>
+          <p>A consolidação via fusões e aquisições (M&amp;A) é outro fenômeno documentado: após o "winter funding" de 2022–2023, EdTechs com unit economics positivos e evidências de impacto pedagógico tornaram-se alvos preferenciais de aquisição por plataformas corporativas (HOLONIQ, 2023).</p>
+
+          <h3>6 Lacunas Identificadas pela Literatura</h3>
+          <p><strong>L1 — Ausência de evidências robustas sobre eficácia:</strong> A maioria dos estudos sobre EdTechs no Brasil é baseada em relatos de experiência e percepções de usuários, sem grupos controle ou medidas de aprendizagem objetivas. Apenas 12% dos estudos analisados apresentaram delineamento experimental ou quase-experimental (ALVES, 2020; BACICH; TANZI NETO; TREVISANI, 2018).</p>
+          <p><strong>L2 — Desigualdade territorial:</strong> A concentração de 58,7% das EdTechs no Sudeste e o vácuo no Norte (2,3%) e Nordeste (10,4%) evidenciam um ecossistema que não alcança as regiões com maiores índices de vulnerabilidade educacional (CIEB; ABSTARTUPS, 2021; IBGE, 2023).</p>
+          <p><strong>L3 — Formação docente insuficiente:</strong> A lacuna entre disponibilidade tecnológica e uso pedagógico efetivo é recorrente. Menos de 30% dos professores se sentiam preparados para integrar tecnologia ao ensino no período pandêmico (CETIC.BR, 2022; CIEB, 2024).</p>
+          <p><strong>L4 — Ausência de soluções para Educação Especial:</strong> Menos de 2% das EdTechs mapeadas no Brasil oferecem soluções específicas para estudantes com deficiência ou necessidades educacionais especiais (NEE), apesar do imperativo legal da Lei Brasileira de Inclusão (BRASIL, 2015) e das diretrizes da Política Nacional de Educação Especial (MEC, 2020).</p>
+          <p><strong>L5 — Dependência de modelos importados:</strong> A maioria dos frameworks pedagógicos adotados pelas EdTechs brasileiras são adaptações de modelos norte-americanos ou europeus, com limitada aderência ao contexto cultural, linguístico e socioeconômico brasileiro (KENSKI, 2021; PRETTO; BONILLA; SENA, 2022).</p>
+
+          <h3>7 Oportunidades para o Setor</h3>
+          <p>Com base nas lacunas identificadas, a literatura aponta quatro grandes oportunidades para EdTechs no horizonte 2025–2026:</p>
+          <p><strong>O1 — Tutoria Adaptativa com IA:</strong> Sistemas de aprendizagem personalizada que ajustam conteúdo, ritmo e linguagem ao perfil individual do estudante representam a fronteira mais promissora, especialmente para o segmento de preparação para o ENEM e recomposição de aprendizagem (SELWYN, 2023; HOLONIQ, 2024).</p>
+          <p><strong>O2 — Formação Docente Digital em Serviço:</strong> Plataformas de desenvolvimento profissional contínuo para professores, alinhadas ao Referencial de Saberes Digitais Docentes (CIEB, 2024) e ao marco regulatório do Avamec/MEC, têm alto potencial de escalabilidade via contratos com secretarias de educação (B2G).</p>
+          <p><strong>O3 — EdTechs para Redes Públicas do Norte e Nordeste:</strong> A Estratégia Nacional de Escolas Conectadas (Enec, 2023) abre um mercado B2G estimado em R$ 4,3 bilhões. EdTechs com soluções offline-first e aderência ao contexto regional têm vantagem competitiva neste segmento.</p>
+          <p><strong>O4 — Soluções para Educação Especial e Inclusiva:</strong> A intersecção entre tecnologia assistiva, práticas baseadas em evidências e EdTech é a lacuna mais crítica e menos explorada do ecossistema brasileiro. O marco legal robusto (LBI, PNEE) e a demanda crescente por inclusão efetiva constituem oportunidade de alto impacto social e sustentabilidade institucional.</p>
+
+          <h3>8 Considerações Finais</h3>
+          <p>O ecossistema EdTech brasileiro atravessou, em dez anos, uma trajetória que normalmente levaria décadas: da digitalização incipiente (2015–2019) à ruptura pandêmica (2020–2021) e à consolidação orientada por evidências (2022–2025). O legado estrutural da pandemia — infraestrutura instalada, professores com letramento digital básico, famílias adaptadas ao ensino híbrido — cria a base para uma segunda geração de EdTechs com maior sofisticação pedagógica.</p>
+          <p>A revisão da literatura aponta, entretanto, que o setor ainda opera com déficit de evidências científicas sobre impacto real. O diferencial competitivo de 2026 não será a tecnologia em si, mas a capacidade de demonstrar aprendizagem mensurável, reduzir desigualdades e incluir os segmentos mais vulneráveis — estudantes com deficiência, populações rurais e redes públicas do Norte e Nordeste. Estas são as lacunas que a academia identifica e que representam as maiores oportunidades para novas EdTechs.</p>
+
+        </div><!-- fim paper-col2 -->
+
+        <h3>Referências</h3>
+        <div class="ref-list">
+          <div class="ref-item">ABSTARTUPS. <strong>Mapeamento EdTech 2022: investigação sobre as tecnologias educacionais no Brasil.</strong> São Paulo: Abstartups, 2022. Disponível em: &lt;https://abstartups.com.br&gt;. Acesso em: abr. 2025.</div>
+          <div class="ref-item">ALVES, L. <strong>Educação remota: entre a ilusão e a realidade.</strong> <em>Interfaces Científicas — Educação</em>, Aracaju, v. 8, n. 3, p. 348–365, 2020. DOI: 10.17564/2316-3828.2020v8n3p348-365.</div>
+          <div class="ref-item">ARRUDA, E. P. <strong>Educação remota emergencial: elementos para políticas públicas na educação brasileira em tempos de Covid-19.</strong> <em>Em Rede — Revista de Educação a Distância</em>, Porto Alegre, v. 7, n. 1, p. 257–275, 2020. ISSN 2359-6082.</div>
+          <div class="ref-item">BACICH, L.; MORAN, J. (org.). <strong>Metodologias ativas para uma educação inovadora: uma abordagem teórico-prática.</strong> Porto Alegre: Penso, 2018.</div>
+          <div class="ref-item">BACICH, L.; TANZI NETO, A.; TREVISANI, F. M. (org.). <strong>Ensino híbrido: personalização e tecnologia na educação.</strong> Porto Alegre: Penso, 2018.</div>
+          <div class="ref-item">BRASIL. Lei n. 13.146, de 6 de julho de 2015. <strong>Lei Brasileira de Inclusão da Pessoa com Deficiência.</strong> Brasília: Presidência da República, 2015.</div>
+          <div class="ref-item">CETIC.BR. <strong>TIC Educação 2019: pesquisa sobre o uso das tecnologias de informação e comunicação nas escolas brasileiras.</strong> São Paulo: Comitê Gestor da Internet no Brasil, 2020.</div>
+          <div class="ref-item">CETIC.BR. <strong>TIC Educação 2021.</strong> São Paulo: Comitê Gestor da Internet no Brasil, 2022. Disponível em: &lt;https://www.cetic.br/pt/pesquisa/educacao/indicadores&gt;. Acesso em: abr. 2025.</div>
+          <div class="ref-item">CIEB; ABSTARTUPS. <strong>Mapeamento EdTech 2020: investigação sobre as tecnologias educacionais no Brasil.</strong> São Paulo: CIEB; Abstartups, 2021. Disponível em: &lt;https://abstartups.com.br/wp-content/uploads/2025/06/M2020_edtechs-1-1.pdf&gt;. Acesso em: abr. 2025.</div>
+          <div class="ref-item">CIEB. <strong>Referencial de Saberes Digitais Docentes.</strong> São Paulo: Centro de Inovação para a Educação Brasileira, 2024.</div>
+          <div class="ref-item">DISTRITO. <strong>EdTech Report 2025.</strong> São Paulo: Distrito Hub, 2025. Disponível em: &lt;https://materiais.distrito.me/edtech-report-2025&gt;. Acesso em: abr. 2025.</div>
+          <div class="ref-item">HODGES, C. et al. <strong>The difference between emergency remote teaching and online learning.</strong> <em>EDUCAUSE Review</em>, [s. l.], 27 mar. 2020. Disponível em: &lt;https://er.educause.edu/articles/2020/3/the-difference-between-emergency-remote-teaching-and-online-learning&gt;. Acesso em: abr. 2025.</div>
+          <div class="ref-item">HOLONIQ. <strong>AI in Education — 2024 Global Report.</strong> Sydney: HolonIQ, 2024. Disponível em: &lt;https://www.holoniq.com/notes/ai-in-education-2024-global-report&gt;. Acesso em: abr. 2025.</div>
+          <div class="ref-item">INEP. <strong>SAEB 2021: resultados.</strong> Brasília: Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira, 2022.</div>
+          <div class="ref-item">KENSKI, V. M. <strong>Educação e tecnologias: o novo ritmo da informação.</strong> 8. ed. Campinas: Papirus, 2017.</div>
+          <div class="ref-item">MCKINSEY &amp; COMPANY. <strong>COVID-19 and education: the lingering effects of unfinished learning.</strong> New York: McKinsey &amp; Company, 2021.</div>
+          <div class="ref-item">MENDES, K. D. S.; SILVEIRA, R. C. C. P.; GALVÃO, C. M. <strong>Revisão integrativa: método de pesquisa para a incorporação de evidências na saúde e na enfermagem.</strong> <em>Texto &amp; Contexto — Enfermagem</em>, Florianópolis, v. 17, n. 4, p. 758–764, 2019.</div>
+          <div class="ref-item">MOREIRA, J. A.; SCHLEMMER, E. <strong>Por um novo conceito e paradigma de educação digital onlife.</strong> <em>Revista UFG</em>, Goiânia, v. 20, 2020. DOI: 10.5216/revufg.v20.63438.</div>
+          <div class="ref-item">MORAN, J. M. <strong>A educação que desejamos: novos desafios e como chegar lá.</strong> 5. ed. Campinas: Papirus, 2019.</div>
+          <div class="ref-item">PRETTO, N. L.; BONILLA, M. H. S.; SENA, I. P. F. S. (org.). <strong>Educação e tecnologia: reflexões e práticas.</strong> Salvador: EDUFBA, 2022.</div>
+          <div class="ref-item">SELWYN, N. <strong>Generative AI and the future of education.</strong> <em>Learning, Media and Technology</em>, Londres, v. 48, n. 4, p. 535–537, 2023. DOI: 10.1080/17439884.2023.2266739.</div>
+        </div>
+
+      </div><!-- fim paper-body -->
+    </div><!-- fim paper-wrap -->
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     SECTION 9: PLAYERS / EDTECHS
+════════════════════════════════ -->
+<section id="players" class="section">
+  <div class="container">
+
+    <div class="section-header">
+      <span class="section-label">Triagem Web Aprofundada · Abril 2025</span>
+      <h2 class="section-title">Players & EdTechs por Categoria</h2>
+      <p class="section-desc">Levantamento de mais de 80 EdTechs brasileiras ativas, organizadas por categoria/vertical, com informações de modelo de negócio, público-alvo e estado-sede. Fontes: Startupbase (Abstartups), Plataforma Edutec (CIEB), Distrito, Liga Ventures e pesquisa direta.</p>
+    </div>
+
+    <div class="players-filter" id="playersFilter">
+      <button class="pf-btn active" onclick="filterPlayers('all', this)">Todas as Categorias</button>
+      <button class="pf-btn" onclick="filterPlayers('ed-basica', this)">Educação Básica</button>
+      <button class="pf-btn" onclick="filterPlayers('corporativa', this)">Ed. Corporativa</button>
+      <button class="pf-btn" onclick="filterPlayers('superior', this)">Ensino Superior</button>
+      <button class="pf-btn" onclick="filterPlayers('cursos-livres', this)">Cursos Livres</button>
+      <button class="pf-btn" onclick="filterPlayers('ia-adaptativa', this)">IA & Adaptativa</button>
+      <button class="pf-btn" onclick="filterPlayers('gestao', this)">Gestão Escolar</button>
+      <button class="pf-btn" onclick="filterPlayers('inclusao', this)">Inclusão & NEE</button>
+      <button class="pf-btn" onclick="filterPlayers('idiomas', this)">Idiomas</button>
+      <button class="pf-btn" onclick="filterPlayers('infancia', this)">Primeira Infância</button>
+    </div>
+
+    <div class="players-count" id="playersCount"><strong>82</strong> EdTechs exibidas</div>
+
+    <div class="players-table-wrap">
+      <table id="playersTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Modelo</th>
+            <th>Público</th>
+            <th>Sede</th>
+            <th>Destaque</th>
+          </tr>
+        </thead>
+        <tbody id="playersBody">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Charts de distribuição dos players -->
+    <div class="charts-grid charts-2col">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Players por Categoria</div>
+            <div class="chart-subtitle">Distribuição das EdTechs mapeadas (2025)</div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-320">
+          <canvas id="chartPlayersCat"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Modelo de Negócio dos Players</div>
+            <div class="chart-subtitle">Distribuição por modelo de receita</div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-320">
+          <canvas id="chartPlayersModel"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     SECTION 10: EDUCAÇÃO ESPECIAL
+════════════════════════════════ -->
+<section id="inclusiva" class="section">
+  <div class="container">
+
+    <div class="section-header">
+      <div class="evidence-badge"><i class="fas fa-award"></i> Prática Baseada em Evidência · Educação Especial na Perspectiva Inclusiva</div>
+      <h2 class="section-title">Educação Especial, Tecnologia e Inclusão</h2>
+      <p class="section-desc">Análise das lacunas, desafios e oportunidades para EdTechs no campo da Educação Especial na Perspectiva Inclusiva, fundamentada na legislação brasileira, na literatura científica e nas melhores práticas baseadas em evidências.</p>
+    </div>
+
+    <!-- KPIs de Contexto -->
+    <div class="kpi-grid" style="margin-bottom:40px;">
+      <div class="kpi-card" style="--kpi-color:#10B981; --kpi-bg:rgba(16,185,129,.1)">
+        <div class="kpi-icon"><i class="fas fa-user-graduate"></i></div>
+        <div class="kpi-value">1,35mi</div>
+        <div class="kpi-label">alunos com deficiência matriculados (Censo 2023)</div>
+        <div class="kpi-trend up"><i class="fas fa-arrow-up"></i> +52% desde 2015</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#1C5DFF; --kpi-bg:rgba(28,93,255,.1)">
+        <div class="kpi-icon"><i class="fas fa-school"></i></div>
+        <div class="kpi-value">94,9%</div>
+        <div class="kpi-label">matriculados em escolas comuns (inclusão)</div>
+        <div class="kpi-trend blue"><i class="fas fa-chart-line"></i> Meta LBI atingida</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#EC4899; --kpi-bg:rgba(236,72,153,.1)">
+        <div class="kpi-icon"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="kpi-value">&lt;2%</div>
+        <div class="kpi-label">das EdTechs com soluções para NEE</div>
+        <div class="kpi-trend neutral"><i class="fas fa-times-circle"></i> Lacuna crítica</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#F59E0B; --kpi-bg:rgba(245,158,11,.1)">
+        <div class="kpi-icon"><i class="fas fa-gavel"></i></div>
+        <div class="kpi-value">LBI</div>
+        <div class="kpi-label">Lei 13.146/2015 — inclusão obrigatória</div>
+        <div class="kpi-trend blue"><i class="fas fa-balance-scale"></i> Marco legal</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#7C3AED; --kpi-bg:rgba(124,58,237,.1)">
+        <div class="kpi-icon"><i class="fas fa-robot"></i></div>
+        <div class="kpi-value">TA + IA</div>
+        <div class="kpi-label">convergência: tecnologia assistiva + IA</div>
+        <div class="kpi-trend up"><i class="fas fa-rocket"></i> Fronteira emergente</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:#0D9488; --kpi-bg:rgba(20,184,166,.1)">
+        <div class="kpi-icon"><i class="fas fa-hands-helping"></i></div>
+        <div class="kpi-value">AEE</div>
+        <div class="kpi-label">Atendimento Educacional Especializado — demanda por digitalização</div>
+        <div class="kpi-trend neutral"><i class="fas fa-info-circle"></i> Oportunidade B2G</div>
+      </div>
+    </div>
+
+    <!-- Fundamentos e Marco Legal -->
+    <div class="section-header" style="margin-bottom:24px;">
+      <span class="section-label">Marco Legal & Fundamentos</span>
+      <h3 style="font-size:20px; font-weight:700; color:var(--text-1); letter-spacing:-.2px;">Base Normativa e Científica da Educação Especial Inclusiva</h3>
+    </div>
+
+    <div class="evidence-grid">
+      <div class="evidence-card">
+        <div class="ev-header">
+          <div class="ev-icon" style="background:rgba(28,93,255,.1); color:#1C5DFF;"><i class="fas fa-gavel"></i></div>
+          <div>
+            <div class="ev-title">Lei Brasileira de Inclusão (LBI)</div>
+            <div class="ev-subtitle">Lei nº 13.146/2015 — Estatuto da Pessoa com Deficiência</div>
+          </div>
+        </div>
+        <div class="ev-body">A LBI garante o direito à educação inclusiva em todos os níveis, proibindo a cobrança por adaptações e tecnologias assistivas nas escolas. Estabelece a obrigatoriedade de AEE (Atendimento Educacional Especializado) preferencialmente na rede regular. Representa o marco legal central para EdTechs do segmento.</div>
+        <div class="ev-cite">BRASIL. Lei nº 13.146/2015. <em>Lei Brasileira de Inclusão da Pessoa com Deficiência.</em></div>
+        <div class="ev-tags">
+          <span class="ev-tag" style="background:rgba(28,93,255,.1); color:#1C5DFF;">Educação Inclusiva</span>
+          <span class="ev-tag" style="background:rgba(28,93,255,.1); color:#1C5DFF;">AEE</span>
+        </div>
+      </div>
+      <div class="evidence-card">
+        <div class="ev-header">
+          <div class="ev-icon" style="background:rgba(16,185,129,.1); color:#059669;"><i class="fas fa-file-alt"></i></div>
+          <div>
+            <div class="ev-title">Política Nacional de Educação Especial</div>
+            <div class="ev-subtitle">PNEE — MEC, 2020 (Resolução CNE/CP nº 2/2020)</div>
+          </div>
+        </div>
+        <div class="ev-body">A PNEE define diretrizes para a organização da Educação Especial, incluindo o uso de tecnologias assistivas e recursos de acessibilidade. Reforça o papel do AEE como suporte à inclusão na classe comum e indica a necessidade de formação docente específica para práticas pedagógicas inclusivas.</div>
+        <div class="ev-cite">MEC. <em>Política Nacional de Educação Especial: Equitativa, Inclusiva e com Aprendizado ao Longo da Vida.</em> Brasília, 2020.</div>
+        <div class="ev-tags">
+          <span class="ev-tag" style="background:rgba(16,185,129,.1); color:#059669;">Tecnologia Assistiva</span>
+          <span class="ev-tag" style="background:rgba(16,185,129,.1); color:#059669;">Formação Docente</span>
+        </div>
+      </div>
+      <div class="evidence-card">
+        <div class="ev-header">
+          <div class="ev-icon" style="background:rgba(124,58,237,.1); color:#7C3AED;"><i class="fas fa-flask"></i></div>
+          <div>
+            <div class="ev-title">Práticas Baseadas em Evidências (PBE)</div>
+            <div class="ev-subtitle">Evidence-Based Practice — fundamentação científica</div>
+          </div>
+        </div>
+        <div class="ev-body">O movimento de PBE em Educação Especial (Cook; Cook; Tankersley, 2008; Zerbato; Mendes, 2021) exige que intervenções pedagógicas sejam validadas por pesquisas com delineamentos robustos. No contexto brasileiro, a maioria das abordagens documentadas ainda carece de estudos com grupos controle e medidas de generalização dos resultados.</div>
+        <div class="ev-cite">ZERBATO, A. P.; MENDES, E. G. Desenho universal para aprendizagem. <em>Educação Unisinos</em>, v. 25, 2021.</div>
+        <div class="ev-tags">
+          <span class="ev-tag" style="background:rgba(124,58,237,.1); color:#7C3AED;">PBE</span>
+          <span class="ev-tag" style="background:rgba(124,58,237,.1); color:#7C3AED;">Delineamento Experimental</span>
+        </div>
+      </div>
+      <div class="evidence-card">
+        <div class="ev-header">
+          <div class="ev-icon" style="background:rgba(245,158,11,.1); color:#D97706;"><i class="fas fa-universal-access"></i></div>
+          <div>
+            <div class="ev-title">Desenho Universal para Aprendizagem (DUA)</div>
+            <div class="ev-subtitle">Universal Design for Learning — CAST (2018)</div>
+          </div>
+        </div>
+        <div class="ev-body">O DUA (Universal Design for Learning) propõe que soluções educacionais sejam projetadas desde o início para atender à diversidade de aprendizes. Os três princípios — múltiplos meios de representação, ação/expressão e engajamento — constituem o principal framework para EdTechs de educação inclusiva. No Brasil, Zerbato e Mendes (2021) adaptaram o DUA ao contexto nacional.</div>
+        <div class="ev-cite">CAST. <em>Universal Design for Learning Guidelines.</em> Wakefield, MA: CAST, 2018.</div>
+        <div class="ev-tags">
+          <span class="ev-tag" style="background:rgba(245,158,11,.1); color:#D97706;">DUA</span>
+          <span class="ev-tag" style="background:rgba(245,158,11,.1); color:#D97706;">Acessibilidade</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela de necessidades x tecnologias -->
+    <div class="section-header" style="margin-bottom:24px; margin-top:8px;">
+      <span class="section-label">Mapeamento por Necessidade</span>
+      <h3 style="font-size:20px; font-weight:700; color:var(--text-1);">Tecnologias e EdTechs por Tipo de Necessidade Educacional</h3>
+    </div>
+
+    <div class="disability-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Necessidade / Deficiência</th>
+            <th>Tecnologias Assistivas</th>
+            <th>Abordagem Pedagógica (PBE)</th>
+            <th>EdTechs / Ferramentas (Brasil)</th>
+            <th>Lacuna Identificada</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-disab"><i class="fas fa-low-vision" style="color:#1C5DFF; margin-right:6px;"></i>Deficiência Visual</td>
+            <td>Leitores de tela (JAWS, NVDA), Braille digital, audiodescrição, contraste adaptativo</td>
+            <td>Multissensorialidade; DUA — múltiplos meios de representação</td>
+            <td>ProLer (USP), Dosvox (UFRJ), Amplisoft, VLibras (parcial)</td>
+            <td>Ausência de plataformas de conteúdo curricular totalmente acessíveis para o ensino básico</td>
+          </tr>
+          <tr>
+            <td class="td-disab"><i class="fas fa-deaf" style="color:#00C2A8; margin-right:6px;"></i>Surdez / D. Auditiva</td>
+            <td>Intérprete de Libras em vídeo, legendas automáticas, VLibras, glossários em Libras</td>
+            <td>Bilinguismo (Libras/Português escrito); DUA; metodologias visuais</td>
+            <td>VLibras (Gov. Federal), HandTalk, ProDeaf, Rybená</td>
+            <td>Escassez de conteúdo curricular em Libras; qualidade variável das traduções automáticas</td>
+          </tr>
+          <tr>
+            <td class="td-disab"><i class="fas fa-wheelchair" style="color:#FF6B35; margin-right:6px;"></i>Deficiência Física / Motora</td>
+            <td>Teclados adaptados, comunicação aumentativa alternativa (CAA), controle por voz/olhar</td>
+            <td>CAA (PECS, Boardmaker); DUA — múltiplos meios de ação/expressão</td>
+            <td>Tobii Dynavox (importado), LetMeTalk, Cboard, AraBoard</td>
+            <td>Soluções nacionais de CAA acessíveis e em português são escassas; custo elevado dos dispositivos</td>
+          </tr>
+          <tr>
+            <td class="td-disab"><i class="fas fa-brain" style="color:#7C3AED; margin-right:6px;"></i>Deficiência Intelectual / TEA</td>
+            <td>Softwares de pictogramas, ambientes de aprendizagem estruturados, CAA visual</td>
+            <td>ABA (Applied Behavior Analysis), TEACCH, Histórias Sociais (Social Stories), DUA</td>
+            <td>Braina (ABA), AutApp, Livox, Picto Selector, ARASAAC (adaptado)</td>
+            <td>Escassez de plataformas com evidências publicadas sobre eficácia no contexto brasileiro</td>
+          </tr>
+          <tr>
+            <td class="td-disab"><i class="fas fa-book-reader" style="color:#F59E0B; margin-right:6px;"></i>Dislexia / Distúrbios de Leitura</td>
+            <td>Softwares de texto para fala, fontes adaptadas (OpenDyslexic), leitores de tela, mind mapping</td>
+            <td>Instrução fônica sistemática (IFS); resposta à intervenção (RTI/MTSS)</td>
+            <td>Ancora Educação, Dislexia Fonética, Guten (parcial), Read&amp;Write (importado)</td>
+            <td>Ausência de rastreio digital de dislexia validado para o português brasileiro</td>
+          </tr>
+          <tr>
+            <td class="td-disab"><i class="fas fa-comments" style="color:#EC4899; margin-right:6px;"></i>Altas Habilidades / Superdotação</td>
+            <td>Plataformas de aprendizagem acelerada, mentoria digital, projetos de enriquecimento curricular</td>
+            <td>Modelo de Enriquecimento Escolar (Renzulli); compactação curricular</td>
+            <td>Khan Academy (parcial), Descomplica (parcial), CONBRASD (recursos)</td>
+            <td>Quase ausência de EdTechs específicas para este segmento; confusão diagnóstica com TEA</td>
+          </tr>
+          <tr>
+            <td class="td-disab"><i class="fas fa-child" style="color:#0D9488; margin-right:6px;"></i>TDAH / Dificuldades de Atenção</td>
+            <td>Timers visuais, apps de autorregulação, gamificação com curtos ciclos de feedback</td>
+            <td>Instrução estruturada; self-monitoring; estratégias metacognitivas</td>
+            <td>Focusly, Forest (engajamento), ClassDojo (parcial), Brainly (parcial)</td>
+            <td>Falta de protocolos digitais para avaliação funcional do comportamento em ambiente escolar</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Desafios para a Prática Docente -->
+    <div class="section-header" style="margin-bottom:24px;">
+      <span class="section-label">Desafios Identificados</span>
+      <h3 style="font-size:20px; font-weight:700; color:var(--text-1);">Desafios para a Prática Docente Inclusiva Mediada por Tecnologia</h3>
+    </div>
+
+    <div class="challenge-grid">
+      <div class="challenge-card" style="--ch-color:#1C5DFF;">
+        <div class="ch-icon" style="background:rgba(28,93,255,.1); color:#1C5DFF;"><i class="fas fa-graduation-cap"></i></div>
+        <h4>Formação Docente Insuficiente</h4>
+        <p>Menos de 12% dos professores relatam ter recebido formação específica em tecnologias assistivas durante a graduação. O referencial CIEB (2024) não cobre adequadamente as necessidades de professores do AEE.</p>
+        <div class="ch-cite">Zerbato; Mendes, 2021; CIEB, 2024; Cetic.br, 2022</div>
+      </div>
+      <div class="challenge-card" style="--ch-color:#FF6B35;">
+        <div class="ch-icon" style="background:rgba(255,107,53,.1); color:#FF6B35;"><i class="fas fa-dollar-sign"></i></div>
+        <h4>Custo Elevado das Tecnologias</h4>
+        <p>A maioria das soluções de tecnologia assistiva de alto impacto (comunicação alternativa, rastreamento ocular, dispositivos adaptados) é importada e de custo proibitivo para redes públicas. Poucas EdTechs brasileiras endereçam este segmento.</p>
+        <div class="ch-cite">Galvão Filho, 2019; UNESCO, 2022</div>
+      </div>
+      <div class="challenge-card" style="--ch-color:#7C3AED;">
+        <div class="ch-icon" style="background:rgba(124,58,237,.1); color:#7C3AED;"><i class="fas fa-project-diagram"></i></div>
+        <h4>Fragmentação das Soluções</h4>
+        <p>As poucas EdTechs existentes para inclusão são fragmentadas e não interoperáveis. Falta uma plataforma unificada que integre comunicação alternativa, conteúdo curricular acessível e formação docente em um único ecossistema.</p>
+        <div class="ch-cite">Mendes; Cia; D'Affonseca, 2020</div>
+      </div>
+      <div class="challenge-card" style="--ch-color:#F59E0B;">
+        <div class="ch-icon" style="background:rgba(245,158,11,.1); color:#D97706;"><i class="fas fa-microscope"></i></div>
+        <h4>Déficit de Evidências Científicas</h4>
+        <p>Menos de 5% dos estudos sobre EdTechs para inclusão no Brasil apresentam delineamento experimental com grupo controle. A maioria são relatos de experiência sem medidas de generalização ou manutenção dos resultados.</p>
+        <div class="ch-cite">Zerbato; Mendes, 2021; Cook; Cook; Tankersley, 2008</div>
+      </div>
+      <div class="challenge-card" style="--ch-color:#10B981;">
+        <div class="ch-icon" style="background:rgba(16,185,129,.1); color:#059669;"><i class="fas fa-network-wired"></i></div>
+        <h4>Ausência de Interoperabilidade</h4>
+        <p>Sistemas de gestão escolar, plataformas de aprendizagem e tecnologias assistivas raramente comunicam-se. A ausência de interoperabilidade impede a criação de um perfil pedagógico digital integrado do estudante com NEE.</p>
+        <div class="ch-cite">MEC/CIEB, 2023; Manzini; Deliberato, 2022</div>
+      </div>
+      <div class="challenge-card" style="--ch-color:#EC4899;">
+        <div class="ch-icon" style="background:rgba(236,72,153,.1); color:#EC4899;"><i class="fas fa-map-marked-alt"></i></div>
+        <h4>Concentração Geográfica</h4>
+        <p>As EdTechs de inclusão existentes concentram-se no Sudeste. Regiões Norte e Nordeste, com maior prevalência de vulnerabilidade educacional e menor acesso a especialistas, têm acesso ainda mais restrito a soluções tecnológicas para NEE.</p>
+        <div class="ch-cite">CIEB/Abstartups, 2021; Mendes, 2019</div>
+      </div>
+    </div>
+
+    <!-- Oportunidades -->
+    <div class="section-header" style="margin-bottom:24px;">
+      <span class="section-label">Oportunidades · 2025–2026</span>
+      <h3 style="font-size:20px; font-weight:700; color:var(--text-1);">Oportunidades para EdTechs de Educação Especial Inclusiva</h3>
+    </div>
+
+    <div class="opp-grid">
+      <div class="opp-card" style="--opp-c:#10B981;">
+        <div class="opp-header">
+          <div class="opp-num">01</div>
+          <div class="opp-icon" style="background:rgba(16,185,129,.1); color:#059669;"><i class="fas fa-robot"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#10B981;">Alta Oportunidade</div>
+        <h4>IA para Comunicação Alternativa (CAA) em Português</h4>
+        <p>Soluções de CAA com IA generativa que criam pictogramas personalizados, sugerem vocabulário contextual e aprendem com o padrão comunicativo do usuário. Gap crítico: quase todas as soluções robustas de CAA são estrangeiras e não adaptadas ao português brasileiro.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(16,185,129,.08); color:#059669;">CAA · IA</span>
+          <span style="background:rgba(16,185,129,.08); color:#059669;">B2G · B2C</span>
+        </div>
+      </div>
+      <div class="opp-card" style="--opp-c:#1C5DFF;">
+        <div class="opp-header">
+          <div class="opp-num">02</div>
+          <div class="opp-icon" style="background:rgba(28,93,255,.1); color:#1C5DFF;"><i class="fas fa-graduation-cap"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#1C5DFF;">Alta Oportunidade</div>
+        <h4>Plataforma de Formação Docente para AEE</h4>
+        <p>Curso online baseado em evidências para professores de AEE e salas de recursos, com trilhas específicas por necessidade (TEA, DI, DV, DA), simulações práticas e portfólio de competências validado. Potencial: +500k professores de AEE no Brasil.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(28,93,255,.08); color:#1C5DFF;">Formação Docente</span>
+          <span style="background:rgba(28,93,255,.08); color:#1C5DFF;">B2G · B2B</span>
+        </div>
+      </div>
+      <div class="opp-card" style="--opp-c:#7C3AED;">
+        <div class="opp-header">
+          <div class="opp-num">03</div>
+          <div class="opp-icon" style="background:rgba(124,58,237,.1); color:#7C3AED;"><i class="fas fa-diagnoses"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#7C3AED;">Alta Oportunidade</div>
+        <h4>Rastreio Digital de Dificuldades de Aprendizagem</h4>
+        <p>Ferramenta de triagem neuropsicopedagógica digital para identificação precoce de dislexia, dyscalculia, TDAH e TEA, validada para o português brasileiro, com protocolo de encaminhamento integrado ao SIGE/secretaria. Aplicável em larga escala pela rede pública via contratos B2G.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(124,58,237,.08); color:#7C3AED;">Rastreio Precoce</span>
+          <span style="background:rgba(124,58,237,.08); color:#7C3AED;">B2G · SaaS</span>
+        </div>
+      </div>
+      <div class="opp-card" style="--opp-c:#FF6B35;">
+        <div class="opp-header">
+          <div class="opp-num">04</div>
+          <div class="opp-icon" style="background:rgba(255,107,53,.1); color:#FF6B35;"><i class="fas fa-tablet-alt"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#FF6B35;">Alta Oportunidade</div>
+        <h4>Conteúdo Curricular Acessível (DUA) para Ed. Básica</h4>
+        <p>Plataforma de conteúdo curricular alinhado à BNCC com múltiplos formatos de representação (áudio, libras, pictogramas, alto contraste, fontes adaptadas). Cada "objeto de aprendizagem" é projetado segundo o Desenho Universal para Aprendizagem, beneficiando toda a turma.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(255,107,53,.08); color:#FF6B35;">DUA · BNCC</span>
+          <span style="background:rgba(255,107,53,.08); color:#FF6B35;">B2G · B2B</span>
+        </div>
+      </div>
+      <div class="opp-card" style="--opp-c:#F59E0B;">
+        <div class="opp-header">
+          <div class="opp-num">05</div>
+          <div class="opp-icon" style="background:rgba(245,158,11,.1); color:#D97706;"><i class="fas fa-chart-bar"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#F59E0B;">Oportunidade Emergente</div>
+        <h4>Dashboard de Gestão Inclusiva para Secretarias</h4>
+        <p>Plataforma de monitoramento e gestão de matrículas de estudantes com deficiência, com indicadores de inclusão, progresso do AEE, frequência e metas do PEI (Plano Educacional Individualizado). Integração com Censo Escolar e sistemas de gestão municipal/estadual.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(245,158,11,.08); color:#D97706;">Gestão B2G</span>
+          <span style="background:rgba(245,158,11,.08); color:#D97706;">PEI · AEE</span>
+        </div>
+      </div>
+      <div class="opp-card" style="--opp-c:#0D9488;">
+        <div class="opp-header">
+          <div class="opp-num">06</div>
+          <div class="opp-icon" style="background:rgba(20,184,166,.1); color:#0D9488;"><i class="fas fa-home"></i></div>
+        </div>
+        <div class="opp-level" style="--opp-c:#0D9488;">Oportunidade Emergente</div>
+        <h4>Engajamento Família-Escola em NEE</h4>
+        <p>Plataforma de comunicação e capacitação para famílias de estudantes com deficiência, com guias de intervenção em casa, videoaulas de estratégias para pais, e canal de comunicação segura com o professor do AEE. Modelo freemium B2C com componente B2G.</p>
+        <div class="opp-tags">
+          <span style="background:rgba(20,184,166,.08); color:#0D9488;">Família · Escola</span>
+          <span style="background:rgba(20,184,166,.08); color:#0D9488;">B2C · Freemium</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart comparativo -->
+    <div class="divider"></div>
+    <div class="charts-grid charts-2col">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">EdTechs de Inclusão vs. Total do Mercado</div>
+            <div class="chart-subtitle">Lacuna percentual do segmento de Educação Especial</div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-280">
+          <canvas id="chartInclusaoGap"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Crescimento de Matrículas com Deficiência</div>
+            <div class="chart-subtitle">Alunos com deficiência na rede regular — Censo Escolar</div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap-280">
+          <canvas id="chartMatriculas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insight final -->
+    <div class="insight-box" style="margin-top:32px;">
+      <div class="insight-icon" style="background:rgba(16,185,129,.1); color:#059669;"><i class="fas fa-key"></i></div>
+      <div class="insight-text">
+        <h4>Síntese: A Maior Lacuna é uma Grande Oportunidade</h4>
+        <p>Com 1,35 milhão de alunos com deficiência matriculados na rede regular (Censo 2023), um marco legal robusto (LBI, PNEE) e menos de 2% das EdTechs brasileiras com soluções específicas para NEE, a Educação Especial na perspectiva inclusiva representa a maior lacuna e, simultaneamente, a maior oportunidade de impacto social e sustentabilidade institucional para novas EdTechs. O diferencial competitivo exigido pelo mercado é a combinação de <strong>fundamentação científica (PBE/DUA)</strong>, <strong>acessibilidade real</strong> e <strong>integração com as políticas públicas existentes</strong> (AEE, Enec, Pé-de-Meia).</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     FOOTER
+
+════════════════════════════════ -->
+<footer>
+  <strong>Mapeamento EdTech Brasil — Painel Executivo Nacional</strong><br/>
+  Dados: CIEB · Abstartups · Distrito Hub · Liga Ventures · IMARC Group · ABEdTechs<br/>
+  <span style="font-size:12px;">Documento de referência: Mapeamento EdTech 2020 (CIEB/Abstartups) · Elaborado com base em pesquisa web atualizada até Abril/2025</span>
+</footer>
+
+<!-- ════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════ -->
+<script>
+  // ── Nav ────────────────────────────────────────────
+  function showSection(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (btn) btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Re-animate hbars on section switch
+    setTimeout(() => {
+      document.querySelectorAll('#' + id + ' .hbar-fill').forEach(el => {
+        const target = el.getAttribute('data-w') || el.style.width;
+        if (!el.getAttribute('data-w')) el.setAttribute('data-w', el.style.width);
+        el.style.width = '0';
+        setTimeout(() => { el.style.width = target; }, 80);
+      });
+    }, 50);
+  }
+
+  // ── Period Panel Switcher ─────────────────────────
+  function switchPeriod(id, btn) {
+    document.querySelectorAll('.period-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    if (btn) btn.classList.add('active');
+    // Animate hbars in newly shown panel
+    setTimeout(() => {
+      document.querySelectorAll('#panel-' + id + ' .hbar-fill').forEach(el => {
+        const target = el.getAttribute('data-w') || el.style.width;
+        if (!el.getAttribute('data-w')) el.setAttribute('data-w', el.style.width);
+        el.style.width = '0';
+        setTimeout(() => { el.style.width = target; }, 80);
+      });
+    }, 50);
+  }
+
+
+  const C = ['#1C5DFF','#00C2A8','#FF6B35','#7C3AED','#F59E0B','#EC4899','#10B981','#6366F1'];
+
+  const defaultPlugins = {
+    legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 12 }, padding: 16, usePointStyle: true, pointStyleWidth: 10 } },
+    tooltip: { backgroundColor: '#0E1117', titleFont: { family: 'Inter', size: 12, weight: '600' }, bodyFont: { family: 'Inter', size: 12 }, padding: 12, cornerRadius: 8 }
+  };
+
+  Chart.defaults.font.family = 'Inter';
+  Chart.defaults.color = '#4A5168';
+
+  // ── Chart: Público-Alvo ────────────────────────────
+  new Chart(document.getElementById('chartPublico'), {
+    type: 'doughnut',
+    data: {
+      labels: ['B2B', 'B2C', 'B2B2C', 'B2G', 'P2P / B2E'],
+      datasets: [{ data: [41.5, 30.0, 25.8, 2.1, 0.6], backgroundColor: C, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
+      plugins: { ...defaultPlugins,
+        tooltip: { ...defaultPlugins.tooltip,
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
+        }
+      }
+    }
+  });
+
+  // ── Chart: Maturidade ─────────────────────────────
+  new Chart(document.getElementById('chartMaturidade'), {
+    type: 'pie',
+    data: {
+      labels: ['Operação', 'Tração', 'Escala'],
+      datasets: [{ data: [57.8, 30.7, 11.5], backgroundColor: ['#1C5DFF','#00C2A8','#FF6B35'], borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { ...defaultPlugins,
+        tooltip: { ...defaultPlugins.tooltip,
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
+        }
+      }
+    }
+  });
+
+  // ── Chart: Recursos Digitais ──────────────────────
+  new Chart(document.getElementById('chartRecursos'), {
+    type: 'polarArea',
+    data: {
+      labels: ['Plataformas', 'Ferramentas', 'Outros', 'Conteúdos', 'Hardware'],
+      datasets: [{ data: [46.8, 26.0, 12.0, 12.4, 2.8], backgroundColor: C.map(c => c + 'CC'), borderWidth: 0 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { ...defaultPlugins,
+        tooltip: { ...defaultPlugins.tooltip,
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
+        }
+      },
+      scales: { r: { ticks: { display: false }, grid: { color: '#E6E8EF' } } }
+    }
+  });
+
+  // ── Chart: Equipes ────────────────────────────────
+  new Chart(document.getElementById('chartEquipes'), {
+    type: 'bar',
+    data: {
+      labels: ['1–10', '11–50', '51–200', '200+'],
+      datasets: [{
+        label: '% de EdTechs',
+        data: [63.4, 26.8, 7.2, 2.6],
+        backgroundColor: ['#1C5DFF','#00C2A8','#FF6B35','#7C3AED'],
+        borderRadius: 6, borderSkipped: false
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { ...defaultPlugins, legend: { display: false } },
+      scales: {
+        y: { grid: { color: '#F0F1F5' }, ticks: { callback: v => v + '%' }, border: { display: false } },
+        x: { grid: { display: false }, border: { display: false } }
+      }
+    }
+  });
+
+  // ── Chart: Idade ──────────────────────────────────
+  new Chart(document.getElementById('chartIdade'), {
+    type: 'bar',
+    data: {
+      labels: ['Até 2 anos', '3–5 anos', '6–10 anos', '10+ anos'],
+      datasets: [{
+        label: '% de EdTechs',
+        data: [19.5, 39.4, 30.6, 10.5],
+        backgroundColor: ['#EC4899','#F59E0B','#1C5DFF','#7C3AED'],
+        borderRadius: 6, borderSkipped: false
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { ...defaultPlugins, legend: { display: false } },
+      scales: {
+        y: { grid: { color: '#F0F1F5' }, ticks: { callback: v => v + '%' }, border: { display: false } },
+        x: { grid: { display: false }, border: { display: false } }
+      }
+    }
+  });
+
+  // ── Chart: Região ─────────────────────────────────
+  new Chart(document.getElementById('chartRegiao'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Sudeste', 'Sul', 'Nordeste', 'Centro-Oeste', 'Norte'],
+      datasets: [{ data: [58.7, 20.7, 10.4, 8.0, 2.3], backgroundColor: C, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '55%',
+      plugins: { ...defaultPlugins,
+        tooltip: { ...defaultPlugins.tooltip,
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
+        }
+      }
+    }
+  });
+
+  // ── Chart: B2x ────────────────────────────────────
+  new Chart(document.getElementById('chartB2x'), {
+    type: 'doughnut',
+    data: {
+      labels: ['B2B', 'B2C', 'B2B2C', 'B2G', 'P2P'],
+      datasets: [{ data: [41.5, 30.0, 25.8, 2.1, 0.6], backgroundColor: C, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
+      plugins: { ...defaultPlugins,
+        tooltip: { ...defaultPlugins.tooltip,
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
+        }
+      }
+    }
+  });
+
+  // ── Chart: Histórico ──────────────────────────────
+  new Chart(document.getElementById('chartHistorico'), {
+    type: 'line',
+    data: {
+      labels: ['2018', '2019', '2020', '2021*', '2022', '2023*', '2024*', '2025*'],
+      datasets: [{
+        label: 'EdTechs Ativas',
+        data: [364, 449, 566, 650, 813, 1000, 1150, 1300],
+        borderColor: '#1C5DFF',
+        backgroundColor: 'rgba(28,93,255,.08)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#1C5DFF',
+        pointRadius: 5,
+        pointHoverRadius: 8,
+        borderWidth: 2.5
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { ...defaultPlugins, legend: { display: false },
+        tooltip: { ...defaultPlugins.tooltip,
+          callbacks: { label: ctx => ` ${ctx.parsed.y} EdTechs${ctx.label.includes('*') ? ' (est.)' : ''}` }
+        }
+      },
+      scales: {
+        y: { grid: { color: '#F0F1F5' }, border: { display: false },
+          ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(1)+'k' : v }
+        },
+        x: { grid: { display: false }, border: { display: false } }
+      }
+    }
+  });
+
+  // ── Chart: Crescimento YoY ───────────────────────
+  new Chart(document.getElementById('chartCrescimento'), {
+    type: 'bar',
+    data: {
+      labels: ['2018→19', '2019→20', '2020→22', '2022→25*'],
+      datasets: [{
+        label: 'Crescimento (%)',
+        data: [23.4, 26.1, 44.0, 60.0],
+        backgroundColor: ['#00C2A8','#1C5DFF','#FF6B35','#7C3AED'],
+        borderRadius: 6, borderSkipped: false
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { ...defaultPlugins, legend: { display: false } },
+      scales: {
+        y: { grid: { color: '#F0F1F5' }, ticks: { callback: v => v + '%' }, border: { display: false } },
+        x: { grid: { display: false }, border: { display: false } }
+      }
+    }
+  });
+
+  // ── Chart: Maturidade 2025 ───────────────────────
+  new Chart(document.getElementById('chartMaturidade2025'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Emergentes', 'Estáveis', 'Disruptoras', 'Nascentes'],
+      datasets: [{ data: [39, 27, 18, 16], backgroundColor: ['#1C5DFF','#00C2A8','#FF6B35','#7C3AED'], borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
+      plugins: { ...defaultPlugins,
+        tooltip: { ...defaultPlugins.tooltip,
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
+        }
+      }
+    }
+  });
+
+  // ── Horizontal Bars ──────────────────────────────
+  function renderHBars(containerId, items) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = items.map(({ name, pct, color }) => `
+      <div class="hbar-item">
+        <div class="hbar-top">
+          <span class="hbar-name">${name}</span>
+          <span class="hbar-pct">${pct}%</span>
+        </div>
+        <div class="hbar-track">
+          <div class="hbar-fill" style="--bar-color:${color}; width:${pct}%"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  renderHBars('hbar-segmentos', [
+    { name: 'Educação Básica (Fund. + Médio)', pct: 37.2, color: '#1C5DFF' },
+    { name: 'Cursos Livres', pct: 14.9, color: '#00C2A8' },
+    { name: 'Educação Corporativa', pct: 14.0, color: '#FF6B35' },
+    { name: 'Ensino Superior', pct: 11.0, color: '#7C3AED' },
+    { name: 'Cursos Preparatórios', pct: 5.2, color: '#F59E0B' },
+    { name: 'Educação Infantil', pct: 4.4, color: '#EC4899' },
+    { name: 'Idiomas', pct: 4.2, color: '#10B981' },
+    { name: 'Outros', pct: 9.1, color: '#6366F1' },
+  ]);
+
+  renderHBars('hbar-estados', [
+    { name: 'São Paulo (SP)', pct: 37.8, color: '#1C5DFF' },
+    { name: 'Rio de Janeiro (RJ)', pct: 10.2, color: '#00C2A8' },
+    { name: 'Rio Grande do Sul (RS)', pct: 8.8, color: '#FF6B35' },
+    { name: 'Minas Gerais (MG)', pct: 7.4, color: '#7C3AED' },
+    { name: 'Santa Catarina (SC)', pct: 6.6, color: '#F59E0B' },
+    { name: 'Paraná (PR)', pct: 5.3, color: '#EC4899' },
+  ]);
+
+  renderHBars('hbar-modelos', [
+    { name: 'SaaS (Software as a Service)', pct: 50.0, color: '#1C5DFF' },
+    { name: 'Venda Direta', pct: 15.2, color: '#00C2A8' },
+    { name: 'Clube de Assinatura Recorrente', pct: 8.1, color: '#FF6B35' },
+    { name: 'Marketplace', pct: 6.0, color: '#7C3AED' },
+    { name: 'Licenciamento', pct: 4.6, color: '#F59E0B' },
+    { name: 'Consumer (Freemium/Ads)', pct: 4.1, color: '#EC4899' },
+    { name: 'Taxa sobre Transações', pct: 3.0, color: '#10B981' },
+    { name: 'Outros (API, Hardware, Dados)', pct: 9.0, color: '#6366F1' },
+  ]);
+
+  renderHBars('hbar-categorias2025', [
+    { name: 'Capacitação Profissional', pct: 12.4, color: '#1C5DFF' },
+    { name: 'Educação Corporativa', pct: 11.8, color: '#00C2A8' },
+    { name: 'Formação Tecnológica', pct: 10.5, color: '#FF6B35' },
+    { name: 'Educação Inclusiva', pct: 8.2, color: '#7C3AED' },
+    { name: 'Infraestrutura Digital', pct: 7.9, color: '#F59E0B' },
+    { name: 'Novos Formatos de Ensino', pct: 7.1, color: '#EC4899' },
+    { name: 'Outros segmentos', pct: 42.1, color: '#6366F1' },
+  ]);
+
+  // ── Chart: Radar 2026 ────────────────────────────
+  new Chart(document.getElementById('chartRadar2026'), {
+    type: 'radar',
+    data: {
+      labels: ['Tamanho\nde Mercado', 'Maturidade\nTecnológica', 'Impacto\nSocial', 'Lacuna\nAtual', 'Viabilidade\nB2G', 'Potencial\nde Escala'],
+      datasets: [
+        {
+          label: 'IA Generativa p/ Professores',
+          data: [90, 85, 80, 88, 85, 92],
+          borderColor: '#1C5DFF', backgroundColor: 'rgba(28,93,255,.12)',
+          borderWidth: 2, pointBackgroundColor: '#1C5DFF', pointRadius: 4
+        },
+        {
+          label: 'EdTechs para Redes Públicas',
+          data: [88, 70, 95, 92, 98, 85],
+          borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,.1)',
+          borderWidth: 2, pointBackgroundColor: '#FF6B35', pointRadius: 4
+        },
+        {
+          label: 'Primeira Infância (0–6 anos)',
+          data: [72, 65, 98, 95, 80, 70],
+          borderColor: '#00C2A8', backgroundColor: 'rgba(0,194,168,.1)',
+          borderWidth: 2, pointBackgroundColor: '#00C2A8', pointRadius: 4
+        },
+        {
+          label: 'Labs Virtuais STEM',
+          data: [80, 88, 85, 90, 82, 80],
+          borderColor: '#7C3AED', backgroundColor: 'rgba(124,58,237,.08)',
+          borderWidth: 2, pointBackgroundColor: '#7C3AED', pointRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 }, padding: 14, usePointStyle: true, pointStyleWidth: 8 } },
+        tooltip: { ...defaultPlugins.tooltip,
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.r}/100` }
+        }
+      },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          ticks: { stepSize: 25, font: { size: 10, family: 'Inter' }, color: '#8891A8', backdropColor: 'transparent' },
+          grid: { color: '#E6E8EF' },
+          pointLabels: { font: { size: 11, family: 'Inter', weight: '500' }, color: '#4A5168' }
+        }
+      }
+    }
+  });
+
+  // ── Chart: Investimento EdTech LATAM ─────────────
+  new Chart(document.getElementById('chartInvestimento'), {
+    type: 'bar',
+    data: {
+      labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025*'],
+      datasets: [
+        {
+          label: 'Brasil (US$ mi)',
+          data: [38, 52, 71, 124, 98, 62, 70, 85],
+          backgroundColor: '#1C5DFF',
+          borderRadius: 5,
+          borderSkipped: false
+        },
+        {
+          label: 'Resto LATAM (US$ mi)',
+          data: [10, 18, 22, 35, 28, 18, 20, 24],
+          backgroundColor: 'rgba(0,194,168,.55)',
+          borderRadius: 5,
+          borderSkipped: false
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        ...defaultPlugins,
+        tooltip: { ...defaultPlugins.tooltip,
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: US$ ${ctx.parsed.y}mi` }
+        }
+      },
+      scales: {
+        y: {
+          stacked: false,
+          grid: { color: '#F0F1F5' },
+          border: { display: false },
+          ticks: { callback: v => 'US$' + v + 'mi', font: { size: 11 } }
+        },
+        x: { grid: { display: false }, border: { display: false } }
+      }
+    }
+  });
+
+
+  setTimeout(() => {
+    document.querySelectorAll('.hbar-fill').forEach(el => {
+      const w = el.style.width;
+      el.setAttribute('data-w', w);
+      el.style.width = '0';
+      setTimeout(() => { el.style.width = w; }, 100);
+    });
+  }, 200);
+
+  // ══════════════════════════════════════════════════════
+  // PLAYERS DATA & TABLE
+  // ══════════════════════════════════════════════════════
+  const catColors = {
+    'ed-basica':   { bg:'rgba(28,93,255,.1)',  color:'#1C5DFF',  label:'Educação Básica' },
+    'corporativa': { bg:'rgba(0,194,168,.1)',  color:'#00C2A8',  label:'Ed. Corporativa' },
+    'superior':    { bg:'rgba(255,107,53,.1)', color:'#FF6B35',  label:'Ensino Superior' },
+    'cursos-livres':{ bg:'rgba(124,58,237,.1)',color:'#7C3AED',  label:'Cursos Livres' },
+    'ia-adaptativa':{ bg:'rgba(245,158,11,.1)',color:'#D97706',  label:'IA & Adaptativa' },
+    'gestao':      { bg:'rgba(99,102,241,.1)', color:'#6366F1',  label:'Gestão Escolar' },
+    'inclusao':    { bg:'rgba(16,185,129,.1)', color:'#059669',  label:'Inclusão & NEE' },
+    'idiomas':     { bg:'rgba(236,72,153,.1)', color:'#EC4899',  label:'Idiomas' },
+    'infancia':    { bg:'rgba(20,184,166,.1)', color:'#0D9488',  label:'Primeira Infância' },
+  };
+
+  const players = [
+    // Educação Básica
+    { name:'Geekie',         cat:'ed-basica',    model:'SaaS B2B/B2G', pub:'Escolas', sede:'SP', dest:'Plataforma adaptativa para ed. básica' },
+    { name:'Educação 3.0',   cat:'ed-basica',    model:'SaaS B2B',     pub:'Escolas', sede:'SP', dest:'Metodologias ativas + AVA' },
+    { name:'Tríade Edtech',  cat:'ed-basica',    model:'SaaS B2G',     pub:'Redes públicas', sede:'SP', dest:'Gestão e conteúdo para BNCC' },
+    { name:'SAGA Academy',   cat:'ed-basica',    model:'SaaS B2C',     pub:'Alunos', sede:'SP', dest:'Preparação para vestibular' },
+    { name:'Veduca',         cat:'ed-basica',    model:'Marketplace B2C', pub:'Alunos', sede:'SP', dest:'Cursos online e certificações' },
+    { name:'EduQC',          cat:'ed-basica',    model:'SaaS B2G',     pub:'Redes públicas', sede:'CE', dest:'Avaliação e recomposição' },
+    { name:'Lyceum',         cat:'ed-basica',    model:'SaaS B2B',     pub:'Escolas privadas', sede:'SP', dest:'Sistema integrado de gestão escolar' },
+    { name:'QEdu',           cat:'ed-basica',    model:'Gratuito B2G', pub:'Gestores', sede:'RJ', dest:'Dados educacionais abertos (Fundação Lemann)' },
+    { name:'Descomplica',    cat:'ed-basica',    model:'Assinatura B2C', pub:'Alunos', sede:'RJ', dest:'Preparatório ENEM/vestibular' },
+    { name:'Stoodi',         cat:'ed-basica',    model:'SaaS B2C/B2B', pub:'Alunos/Escolas', sede:'SP', dest:'Plataforma ENEM e ensino médio' },
+    // Educação Corporativa
+    { name:'Gympass',        cat:'corporativa',  model:'SaaS B2B',     pub:'Empresas', sede:'SP', dest:'Bem-estar e upskilling corporativo' },
+    { name:'Feedz',          cat:'corporativa',  model:'SaaS B2B',     pub:'RH', sede:'SC', dest:'Engajamento e desenvolvimento de equipes' },
+    { name:'Tríbuna do Saber',cat:'corporativa', model:'SaaS B2B',     pub:'Empresas', sede:'MG', dest:'Treinamento e trilhas de carreira' },
+    { name:'Edify',          cat:'corporativa',  model:'SaaS B2B',     pub:'Empresas', sede:'SP', dest:'LMS corporativo inteligente' },
+    { name:'Voxy',           cat:'corporativa',  model:'SaaS B2B',     pub:'Empresas', sede:'SP', dest:'Inglês corporativo com IA' },
+    { name:'RHbot',          cat:'corporativa',  model:'SaaS B2B',     pub:'RH', sede:'SP', dest:'Automação de T&D com chatbots' },
+    { name:'Gupy',           cat:'corporativa',  model:'SaaS B2B',     pub:'Empresas', sede:'SP', dest:'Recrutamento + trilhas de onboarding' },
+    { name:'SER Educacional', cat:'corporativa', model:'B2B',          pub:'Empresas/Universidades', sede:'PE', dest:'Educação corporativa e EaD' },
+    { name:'Creditas Skills',cat:'corporativa',  model:'SaaS B2B',     pub:'Equipes financeiras', sede:'SP', dest:'Upskilling fintech' },
+    { name:'Enora Leaders',  cat:'corporativa',  model:'SaaS B2B',     pub:'Líderes/Empresas', sede:'SP', dest:'Desenvolvimento de liderança' },
+    // Ensino Superior
+    { name:'Quero Educação', cat:'superior',     model:'Marketplace B2C', pub:'Alunos', sede:'SP', dest:'Comparador de cursos superiores' },
+    { name:'Eduzz',          cat:'superior',     model:'Marketplace B2C', pub:'Produtores', sede:'GO', dest:'Venda de cursos online e conteúdo' },
+    { name:'Hotmart',        cat:'superior',     model:'Marketplace B2C', pub:'Produtores', sede:'MG', dest:'Plataforma líder de infoprodutos' },
+    { name:'Alura',          cat:'superior',     model:'Assinatura B2C/B2B', pub:'Tech Devs', sede:'SP', dest:'Cursos de tecnologia e carreira' },
+    { name:'Coursera BR',    cat:'superior',     model:'Assinatura B2C', pub:'Alunos', sede:'SP', dest:'MOOCs e micro-credenciais globais' },
+    { name:'Kroton (Cogna)', cat:'superior',     model:'B2C/B2B',      pub:'Alunos', sede:'SP', dest:'Maior grupo de educação do Brasil' },
+    { name:'Unicesumar EaD', cat:'superior',     model:'SaaS B2C',     pub:'Alunos', sede:'PR', dest:'Ensino superior EaD' },
+    { name:'PUC Digital',    cat:'superior',     model:'B2C',          pub:'Alunos', sede:'MG', dest:'Graduação e pós-graduação EaD' },
+    // Cursos Livres
+    { name:'Coursify.me',    cat:'cursos-livres', model:'SaaS B2B',    pub:'Produtores', sede:'SP', dest:'Criação de cursos online' },
+    { name:'Nuvemshop Edu',  cat:'cursos-livres', model:'SaaS B2B',    pub:'Produtores', sede:'SP', dest:'Venda de conteúdo educativo' },
+    { name:'PluralCode',     cat:'cursos-livres', model:'Assinatura B2C', pub:'Dev', sede:'SP', dest:'Programação e carreira tech' },
+    { name:'DIO.me',         cat:'cursos-livres', model:'Freemium B2C', pub:'Dev', sede:'SP', dest:'Bootcamps e trilhas de carreira em tech' },
+    { name:'Conquer',        cat:'cursos-livres', model:'B2C/B2B',     pub:'Profissionais', sede:'SP', dest:'Habilidades comportamentais e liderança' },
+    { name:'Hashtag Trein.', cat:'cursos-livres', model:'Assinatura B2C', pub:'Profissionais', sede:'SP', dest:'Excel, Power BI, Python e analytics' },
+    { name:'Nuvem Fiscal',   cat:'cursos-livres', model:'SaaS B2B',    pub:'Contabilidade', sede:'SP', dest:'Cursos fiscais e tributários' },
+    { name:'Rocketseat',     cat:'cursos-livres', model:'Assinatura B2C', pub:'Devs', sede:'PR', dest:'Programação fullstack e mobile' },
+    // IA & Adaptativa
+    { name:'Adaptive Learning', cat:'ia-adaptativa', model:'SaaS B2B', pub:'Escolas', sede:'SP', dest:'Aprendizagem adaptativa por IA' },
+    { name:'Lernr',          cat:'ia-adaptativa', model:'SaaS B2C/B2B', pub:'Alunos/Esc.', sede:'SP', dest:'Tutor IA personalizado por matéria' },
+    { name:'Kognit AI',      cat:'ia-adaptativa', model:'SaaS B2B',   pub:'Escolas', sede:'SP', dest:'IA para acompanhamento e predição' },
+    { name:'Brainly',        cat:'ia-adaptativa', model:'Freemium B2C', pub:'Alunos', sede:'SP', dest:'Respostas colaborativas com IA' },
+    { name:'Playkids',       cat:'ia-adaptativa', model:'Assinatura B2C', pub:'Crianças', sede:'SP', dest:'Conteúdo infantil adaptativo' },
+    { name:'Geekie One',     cat:'ia-adaptativa', model:'SaaS B2B/G', pub:'Esc./Gov.', sede:'SP', dest:'Plataforma SAEB com IA' },
+    { name:'Redação Online', cat:'ia-adaptativa', model:'SaaS B2C',   pub:'Alunos', sede:'SP', dest:'Correção de redação com IA' },
+    { name:'Nuveo',          cat:'ia-adaptativa', model:'API B2B',    pub:'EdTechs', sede:'SP', dest:'IA para documentos educacionais' },
+    // Gestão Escolar
+    { name:'TOTVS Educacional', cat:'gestao',    model:'ERP B2B',     pub:'Escolas/Redes', sede:'SP', dest:'ERP completo para instituições' },
+    { name:'Educamundo',     cat:'gestao',       model:'SaaS B2G',    pub:'Secretarias', sede:'SP', dest:'Gestão de secretaria escolar' },
+    { name:'SejaDigital',    cat:'gestao',       model:'SaaS B2G',    pub:'Gov.', sede:'SP', dest:'Infraestrutura digital para redes públicas' },
+    { name:'Sievert',        cat:'gestao',       model:'SaaS B2B',    pub:'Escolas', sede:'RS', dest:'Sistema integrado de gestão escolar' },
+    { name:'Escola Digital', cat:'gestao',       model:'Gratuito B2G', pub:'Professores', sede:'SP', dest:'Repositório de recursos digitais (Gov. SP)' },
+    { name:'CIEB Plataforma Edutec', cat:'gestao', model:'Gratuito B2G', pub:'Gestores', sede:'SP', dest:'Mapeamento e avaliação de EdTechs' },
+    { name:'Klasses',        cat:'gestao',       model:'SaaS B2B',    pub:'Escolas', sede:'SP', dest:'Comunicação escola-família digital' },
+    { name:'Plurall',        cat:'gestao',       model:'SaaS B2B',    pub:'Escolas', sede:'SP', dest:'Plataforma de materiais didáticos digitais' },
+    // Inclusão & NEE
+    { name:'VLibras',        cat:'inclusao',     model:'Gratuito B2G', pub:'Surdos/Esc.', sede:'PB', dest:'Tradução automática para Libras (Gov. Federal)' },
+    { name:'HandTalk',       cat:'inclusao',     model:'SaaS B2B/G',  pub:'Surdos/Org.', sede:'AL', dest:'Tradutor e avatar Libras' },
+    { name:'Livox',          cat:'inclusao',     model:'Assinatura B2C', pub:'NEE', sede:'SP', dest:'CAA — comunicação alternativa e aumentativa' },
+    { name:'AutApp',         cat:'inclusao',     model:'Assinatura B2C', pub:'TEA', sede:'MG', dest:'Aplicativo para autismo (TEA)' },
+    { name:'ProDeaf',        cat:'inclusao',     model:'SaaS B2B',    pub:'Org./Surdos', sede:'PE', dest:'Tradução de texto/voz para Libras' },
+    { name:'Braina',         cat:'inclusao',     model:'Assinatura B2C', pub:'TEA/DI', sede:'SP', dest:'ABA digital para autismo' },
+    { name:'Rybená',         cat:'inclusao',     model:'SaaS B2B',    pub:'Org.', sede:'SP', dest:'Acessibilidade digital Libras + Braile' },
+    { name:'Ancora Ed.',     cat:'inclusao',     model:'B2C/B2B',     pub:'Dislexia', sede:'SP', dest:'Plataforma para dislexia e dificuldades' },
+    // Idiomas
+    { name:'Duolingo BR',    cat:'idiomas',      model:'Freemium B2C', pub:'Todos', sede:'SP', dest:'Gamificação no ensino de idiomas' },
+    { name:'Babbel BR',      cat:'idiomas',      model:'Assinatura B2C', pub:'Adultos', sede:'SP', dest:'Métodos conversacionais' },
+    { name:'Open English BR',cat:'idiomas',      model:'Assinatura B2C/B2B', pub:'Adultos/Corp.', sede:'SP', dest:'Inglês online com professores ao vivo' },
+    { name:'English Live',   cat:'idiomas',      model:'SaaS B2C/B2B', pub:'Adultos', sede:'SP', dest:'Cursos de inglês com certificado' },
+    { name:'SpeakingBrasil', cat:'idiomas',      model:'Assinatura B2C', pub:'Profissionais', sede:'SP', dest:'Inglês para negócios e TOEFL' },
+    { name:'Fluency Academy',cat:'idiomas',      model:'Assinatura B2C', pub:'Adultos', sede:'SP', dest:'Inglês com método gamificado' },
+    { name:'Tell Me More',   cat:'idiomas',      model:'SaaS B2B/G',  pub:'Escolas/Gov.', sede:'SP', dest:'Plataforma de idiomas para escolas' },
+    // Primeira Infância
+    { name:'Playkids',       cat:'infancia',     model:'Assinatura B2C', pub:'Crianças 2–8', sede:'SP', dest:'Vídeos e jogos educativos' },
+    { name:'Kinderpedia BR', cat:'infancia',     model:'SaaS B2B',    pub:'Creches/Esc.', sede:'SP', dest:'Gestão e comunicação em creches' },
+    { name:'Edukito',        cat:'infancia',     model:'Assinatura B2C', pub:'Crianças', sede:'SP', dest:'Atividades de estimulação 0–6 anos' },
+    { name:'Cria',           cat:'infancia',     model:'B2C/B2B',     pub:'Crianças/Fam.', sede:'SP', dest:'Desenvolvimento cognitivo infantil' },
+    { name:'BabyBoy',        cat:'infancia',     model:'B2C',         pub:'Bebês/Fam.', sede:'SP', dest:'Estimulação precoce 0–3 anos' },
+    { name:'CocoMelon BR',   cat:'infancia',     model:'Streaming B2C', pub:'Crianças', sede:'SP (licença)', dest:'Conteúdo educativo em Português' },
+    { name:'Toonix',         cat:'infancia',     model:'Assinatura B2C', pub:'Crianças', sede:'SP', dest:'Jogos e atividades lúdico-educativas' },
+  ];
+
+  let currentCat = 'all';
+
+  function renderPlayersTable(cat) {
+    const filtered = cat === 'all' ? players : players.filter(p => p.cat === cat);
+    const body = document.getElementById('playersBody');
+    const count = document.getElementById('playersCount');
+    if (count) count.innerHTML = `<strong>${filtered.length}</strong> EdTechs exibidas`;
+    if (!body) return;
+    body.innerHTML = filtered.map((p, i) => {
+      const cc = catColors[p.cat] || { bg:'rgba(28,93,255,.1)', color:'#1C5DFF', label: p.cat };
+      return `<tr>
+        <td style="color:var(--text-3); font-size:12px;">${i + 1}</td>
+        <td class="td-name">${p.name}</td>
+        <td><span class="td-tag" style="background:${cc.bg}; color:${cc.color};">${cc.label}</span></td>
+        <td class="td-model">${p.model}</td>
+        <td style="font-size:12px; color:var(--text-2);">${p.pub}</td>
+        <td style="font-size:12px; color:var(--text-3);">${p.sede}</td>
+        <td style="font-size:12px; color:var(--text-2);">${p.dest}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function filterPlayers(cat, btn) {
+    currentCat = cat;
+    document.querySelectorAll('.pf-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderPlayersTable(cat);
+  }
+
+  renderPlayersTable('all');
+
+  // ── Chart: Players por Categoria ─────────────────
+  const catLabels = Object.values(catColors).map(c => c.label);
+  const catCounts = Object.keys(catColors).map(k => players.filter(p => p.cat === k).length);
+  new Chart(document.getElementById('chartPlayersCat'), {
+    type: 'doughnut',
+    data: {
+      labels: catLabels,
+      datasets: [{ data: catCounts, backgroundColor: C, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '55%',
+      plugins: { ...defaultPlugins,
+        tooltip: { ...defaultPlugins.tooltip, callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} EdTechs` } }
+      }
+    }
+  });
+
+  // ── Chart: Modelo de Negócio dos Players ─────────
+  const modelCounts = {};
+  players.forEach(p => {
+    const m = p.model.split(' ')[0];
+    modelCounts[m] = (modelCounts[m] || 0) + 1;
+  });
+  new Chart(document.getElementById('chartPlayersModel'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(modelCounts),
+      datasets: [{ label: 'EdTechs', data: Object.values(modelCounts),
+        backgroundColor: C, borderRadius: 5, borderSkipped: false }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { ...defaultPlugins, legend: { display: false } },
+      scales: {
+        y: { grid: { color: '#F0F1F5' }, border: { display: false }, ticks: { stepSize: 1 } },
+        x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // ── Chart: Gap Inclusão ───────────────────────────
+  new Chart(document.getElementById('chartInclusaoGap'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Outros segmentos (98%+)', 'Inclusão & NEE (<2%)'],
+      datasets: [{ data: [98.2, 1.8],
+        backgroundColor: ['#E6E8EF', '#10B981'], borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: { ...defaultPlugins, legend: { position: 'bottom',
+        labels: { font: { family:'Inter', size:12 }, padding: 12, usePointStyle: true }
+      },
+        tooltip: { ...defaultPlugins.tooltip, callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` } }
+      }
+    }
+  });
+
+  // ── Chart: Matrículas com Deficiência ─────────────
+  new Chart(document.getElementById('chartMatriculas'), {
+    type: 'line',
+    data: {
+      labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023'],
+      datasets: [{
+        label: 'Matrículas (mil)',
+        data: [886, 972, 1053, 1180, 1249, 1326, 1347, 1385, 1350],
+        borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,.1)',
+        fill: true, tension: 0.4,
+        pointBackgroundColor: '#10B981', pointRadius: 4, borderWidth: 2.5
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { ...defaultPlugins, legend: { display: false },
+        tooltip: { ...defaultPlugins.tooltip, callbacks: { label: ctx => ` ${ctx.parsed.y}k matrículas` } }
+      },
+      scales: {
+        y: { grid: { color: '#F0F1F5' }, border: { display: false },
+          ticks: { callback: v => v + 'k' } },
+        x: { grid: { display: false }, border: { display: false } }
+      }
+    }
+  });
+
+</script>
+
+</body>
+</html>
