@@ -271,8 +271,8 @@ Dashboard executivo interativo que consolida dados do ecossistema de tecnologias
 
 ## 📝 Nota Metodológica
 
-Os dados de 2020 são autodeclarados pelas EdTechs participantes do mapeamento CIEB/Abstartups. A série histórica 2018–2022 é baseada em dados primários dos mapeamentos. Os dados de 2025 combinam triagem web (dados secundários interpolados) com relatórios setoriais. Projeções de mercado provêm de fontes secundárias (IMARC Group, HolonIQ) e podem variar conforme metodologia.
+Os dados de 2020 são autodeclarados pelas EdTechs participantes do mapeamento CIEB/Abstartups. A série histórica 2018–2022 é baseada em dados primários dos mapeamentos. Os dados de 2026 combinam triagem web (dados secundários interpolados) com relatórios setoriais. Projeções de mercado provêm de fontes secundárias (IMARC Group, HolonIQ) e podem variar conforme metodologia.
 
-**Última atualização:** Maio 2025  
+**Última atualização:** Maio 2026  
 **Formato:** Dashboard estático HTML único (single-file SPA)  
 **Tamanho:** ~255 KB (HTML + CSS + JS inline)
